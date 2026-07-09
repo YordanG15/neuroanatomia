@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réplica de Amazon - Inicio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #eaeded;
+            color: #111;
+        }
+
+        /* --- Barra de Navegación --- */
+        header {
+            background-color: #131921;
+            color: white;
+        }
+
+        .nav-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #f0c14b;
+            cursor: pointer;
+        }
+
+        .search-container {
+            display: flex;
+            flex-grow: 1;
+            max-width: 600px;
+            margin: 0 20px;
+        }
+
+        .search-select {
+            background-color: #f3f3f3;
+            border: none;
+            padding: 10px;
+            border-radius: 4px 0 0 4px;
+            outline: none;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 10px;
+            border: none;
+            outline: none;
+        }
+
+        .search-btn {
+            background-color: #febd69;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+        }
+
+        .nav-item {
+            cursor: pointer;
+        }
+
+        .nav-item span {
+            display: block;
+        }
+
+        .nav-bold {
+            font-weight: bold;
+        }
+
+        /* Submenú inferior */
+        .nav-bottom {
+            background-color: #232f3e;
+            display: flex;
+            gap: 15px;
+            padding: 8px 20px;
+            font-size: 14px;
+        }
+
+        .nav-bottom a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* --- Banner Principal (Hero) --- */
+        .hero-banner {
+            background: linear-gradient(to right, #00a8e1, #0073a5);
+            color: white;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding-left: 10%;
+            position: relative;
+        }
+
+        .hero-banner h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero-banner p {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .prime-logo {
+            font-weight: bold;
+            font-style: italic;
+            font-size: 28px;
+        }
+
+        /* --- Contenedor de Tarjetas (Grid) --- */
+        .main-container {
+            max-width: 1500px;
+            margin: -60px auto 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 320px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* Botón estilo Amazon */
+        .btn-amazon {
+            background-color: #f0c14b;
+            border: 1px solid #a88734;
+            color: #111;
+            padding: 10px;
+            text-align: center;
+            border-radius: 3px;
+            text-decoration: none;
+            font-size: 13px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+        }
+
+        .btn-amazon:hover {
+            background-color: #ddb347;
+        }
+
+        /* Estilos específicos para la tarjeta de categorías */
+        .category-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .category-item {
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .circle-img {
+            width: 80px;
+            height: 80px;
+            background-color: #eee;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        /* Marcadores de posición de imagen */
+        .image-placeholder {
+            background-color: #f5f5f5;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-top">
+            <div class="logo">amazon.com.mx</div>
+            
+            <div class="search-container">
+                <select class="search-select">
+                    <option>Todos los departamentos</option>
+                </select>
+                <input type="text" class="search-input" placeholder="Buscar...">
+                <button class="search-btn">🔍</button>
+            </div>
+
+            <div class="nav-right">
+                <div class="nav-item">
+                    <span>Hola, Identifícate</span>
+                    <span class="nav-bold">Mi cuenta ▾</span>
+                </div>
+                <div class="nav-item">
+                    <span>Prueba</span>
+                    <span class="nav-bold">Prime ▾</span>
+                </div>
+                <div class="nav-item">
+                    <span>Wish</span>
+                    <span class="nav-bold">List</span>
+                </div>
+                <div class="nav-item nav-bold">
+                    🛒 Carrito
+                </div>
+            </div>
+        </div>
+
+        <div class="nav-bottom">
+            <a href="#" class="nav-bold">Todos los Departamentos</a>
+            <a href="#">Mi Amazon.com.mx</a>
+            <a href="#">Promociones</a>
+            <a href="#">Vender</a>
+            <a href="#">Ayuda</a>
+        </div>
+    </header>
+
+    <section class="hero-banner">
+        <h1>Envíos GRATIS y rápidos</h1>
+        <p>más Prime Video</p>
+        <div class="prime-logo">amazon prime</div>
+    </section>
+
+    <main class="main-container">
+        
+        <div class="card">
+            <div>
+                <h2>Bienvenido</h2>
+                <p>Inicia sesión para vivir tu mejor experiencia</p>
+            </div>
+            <button class="btn-amazon">Iniciar sesión de forma segura</button>
+        </div>
+
+        <div class="card">
+            <h2>Categorías populares</h2>
+            <div class="category-grid">
+                <div class="category-item">
+                    <div class="circle-img">📷</div>
+                    <span>Electrónicos</span>
+                </div>
+                <div class="category-item">
+                    <div class="circle-img">🧸</div>
+                    <span>Juguetes</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Amazon Fashion</h2>
+            <div class="image-placeholder">
+                [Imagen de Moda]
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Descubre todas las ofertas</h2>
+            <div class="image-placeholder">
+                [Imagen de Ofertas]
+            </div>
+        </div>
+
+    </main>
+
+</body>
+</html>
