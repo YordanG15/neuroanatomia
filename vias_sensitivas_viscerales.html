@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas Interactivo · Vías Sensitivas Viscerales</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+:root{
+  --void:#0a0c11;
+  --panel:#12151c;
+  --panel-alt:#181c25;
+  --hair: rgba(255,255,255,0.08);
+  --ink:#eef0f3;
+  --ink-dim:#8b93a4;
+  --ink-faint:#565d6c;
+  --simp:#e2493c;    /* simpático / nocicepción / alarma */
+  --para:#42b788;    /* parasimpático / reflejo */
+  --somatic:#e3b23c; /* fibra somática / referido */
+  --neo:#f2924a;     /* neoespinotalámico */
+  --pbr:#9d80e6;     /* espinoparabraquial */
+  --dorsal:#4d9fe0;  /* columna dorsal postsináptica */
+  --font-d:'Space Grotesk', sans-serif;
+  --font-b:'Inter', sans-serif;
+  --font-m:'IBM Plex Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:var(--void);color:var(--ink);font-family:var(--font-b);}
+::selection{background:var(--simp);color:#fff;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:#2a2f3a;border-radius:4px;}
+
+a{color:inherit;}
+
+.app{display:grid;grid-template-columns:66px 260px 1fr;min-height:100vh;}
+@media (max-width: 980px){ .app{grid-template-columns:1fr;} .rail,.sidebar{display:none;} .mobile-nav{display:flex !important;} }
+
+/* ---------- signature rail: segmental spinal levels ---------- */
+.rail{
+  border-right:1px solid var(--hair);
+  background:linear-gradient(180deg,#0d1016,#0a0c11);
+  padding:20px 0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  position:sticky;top:0;height:100vh;
+}
+.rail-title{writing-mode:vertical-rl;text-orientation:mixed;font-family:var(--font-m);font-size:10px;letter-spacing:.14em;color:var(--ink-faint);margin-bottom:14px;text-transform:uppercase;}
+.rail-seg{
+  font-family:var(--font-m);font-size:9.5px;color:var(--ink-faint);
+  width:34px;height:15px;display:flex;align-items:center;justify-content:center;
+  border-radius:3px;transition:all .35s ease;position:relative;
+}
+.rail-seg.on{color:#fff;font-weight:600;box-shadow:0 0 12px 1px var(--seg-color, var(--simp)); background:var(--seg-color, var(--simp));}
+.rail-group-gap{height:8px;}
+
+/* ---------- sidebar ---------- */
+.sidebar{
+  border-right:1px solid var(--hair);
+  padding:22px 14px 30px;
+  overflow-y:auto;height:100vh;position:sticky;top:0;
+}
+.brand{padding:2px 8px 18px;border-bottom:1px solid var(--hair);margin-bottom:14px;}
+.brand .eyebrow{font-family:var(--font-m);font-size:10px;color:var(--simp);letter-spacing:.14em;text-transform:uppercase;}
+.brand h1{font-family:var(--font-d);font-size:19px;line-height:1.15;margin:6px 0 4px;font-weight:700;}
+.brand .sub{font-size:11.5px;color:var(--ink-dim);}
+
+.navgroup-label{font-family:var(--font-m);font-size:9.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.12em;margin:16px 8px 6px;}
+.navitem{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;
+  font-size:13px;color:var(--ink-dim);transition:background .15s,color .15s;margin-bottom:1px;
+}
+.navitem:hover{background:var(--panel-alt);color:var(--ink);}
+.navitem.active{background:var(--panel-alt);color:#fff;}
+.navitem .num{font-family:var(--font-m);font-size:10.5px;color:var(--ink-faint);width:20px;flex-shrink:0;}
+.navitem.active .num{color:var(--dot,var(--simp));}
+.navitem .dot{width:6px;height:6px;border-radius:50%;background:var(--dot,var(--ink-faint));flex-shrink:0;}
+
+/* ---------- main ---------- */
+.main{padding:34px 42px 80px;max-width:1180px;overflow-x:hidden;}
+.crumb{font-family:var(--font-m);font-size:10.5px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px;}
+.headline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px;}
+h2.title{font-family:var(--font-d);font-size:32px;margin:0;font-weight:700;letter-spacing:-.01em;}
+.tag{font-family:var(--font-m);font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid currentColor;color:var(--tagcolor,var(--simp));}
+p.lead{color:var(--ink-dim);font-size:15px;max-width:760px;line-height:1.6;margin:10px 0 30px;}
+
+.split{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:30px;align-items:start;}
+@media (max-width:760px){.split{grid-template-columns:1fr;}}
+.diagram-card{
+  background:var(--panel);border:1px solid var(--hair);border-radius:16px;padding:18px 16px 22px;
+  position:sticky; top:20px;
+}
+.diagram-card .cap{font-family:var(--font-m);font-size:10px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.chain-svg, .schem-svg{width:100%;height:auto;display:block;}
+.node-label{font-family:var(--font-b);font-size:11.5px;font-weight:600;}
+.node-sub{font-family:var(--font-m);font-size:9px;}
+
+.info-col{display:flex;flex-direction:column;gap:16px;}
+.card{background:var(--panel);border:1px solid var(--hair);border-radius:14px;padding:18px 20px;}
+.card h3{font-family:var(--font-d);font-size:14.5px;margin:0 0 10px;color:var(--card-accent,#fff);display:flex;align-items:center;gap:8px;}
+.card h3::before{content:'';width:7px;height:7px;border-radius:2px;background:var(--card-accent,var(--simp));display:inline-block;}
+.card p, .card li{font-size:13.6px;line-height:1.65;color:#d5d8de;margin:0;}
+.card ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;}
+.card b{color:#fff;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media (max-width:560px){.grid2{grid-template-columns:1fr;}}
+
+.callout{border-left:3px solid var(--acc,var(--simp));background:linear-gradient(90deg, color-mix(in srgb, var(--acc,var(--simp)) 10%, transparent), transparent);padding:12px 16px;border-radius:0 10px 10px 0;font-size:13.4px;color:#e4e6ea;}
+.callout b{color:var(--acc,var(--simp));}
+
+.pillrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;}
+.pill{font-family:var(--font-m);font-size:11px;padding:5px 10px;border-radius:20px;background:var(--panel-alt);border:1px solid var(--hair);color:var(--ink-dim);}
+
+table.datatable{width:100%;border-collapse:collapse;font-size:13px;}
+table.datatable th{text-align:left;font-family:var(--font-m);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-faint);padding:8px 10px;border-bottom:1px solid var(--hair);}
+table.datatable td{padding:11px 10px;border-bottom:1px solid var(--hair);vertical-align:top;color:#d5d8de;}
+table.datatable tr:hover td{background:var(--panel-alt);}
+.rowdot{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px;}
+
+.footnav{display:flex;justify-content:space-between;margin-top:44px;gap:14px;}
+.navbtn{font-family:var(--font-m);font-size:12px;background:var(--panel);border:1px solid var(--hair);border-radius:10px;padding:12px 18px;cursor:pointer;color:var(--ink);display:flex;align-items:center;gap:8px;transition:border-color .15s;}
+.navbtn:hover{border-color:var(--ink-dim);}
+.navbtn:disabled{opacity:.3;cursor:default;}
+.navbtn span.small{color:var(--ink-faint);font-size:10px;display:block;text-transform:uppercase;}
+
+.mobile-nav{display:none;position:sticky;top:0;z-index:20;background:var(--void);border-bottom:1px solid var(--hair);padding:10px 14px;align-items:center;gap:10px;}
+.mobile-nav select{flex:1;background:var(--panel);color:var(--ink);border:1px solid var(--hair);border-radius:8px;padding:8px;font-family:var(--font-b);}
+
+/* quiz */
+.quiz-box{background:var(--panel);border:1px solid var(--hair);border-radius:16px;padding:26px;max-width:640px;}
+.quiz-progress{display:flex;gap:4px;margin-bottom:18px;}
+.quiz-progress i{flex:1;height:4px;border-radius:2px;background:#242833;}
+.quiz-progress i.done{background:var(--simp);}
+.quiz-q{font-family:var(--font-d);font-size:18px;margin-bottom:18px;line-height:1.4;}
+.quiz-opt{display:block;width:100%;text-align:left;background:var(--panel-alt);border:1px solid var(--hair);color:var(--ink);padding:13px 16px;border-radius:10px;margin-bottom:9px;cursor:pointer;font-size:13.8px;font-family:var(--font-b);transition:all .15s;}
+.quiz-opt:hover{border-color:var(--ink-dim);}
+.quiz-opt.correct{border-color:var(--para);background:rgba(66,183,136,.14);color:#fff;}
+.quiz-opt.wrong{border-color:var(--simp);background:rgba(226,73,60,.14);color:#fff;}
+.quiz-opt:disabled{cursor:default;}
+.quiz-explain{font-size:13px;color:var(--ink-dim);margin-top:14px;padding-top:14px;border-top:1px solid var(--hair);line-height:1.6;}
+.quiz-footer{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.score-badge{font-family:var(--font-m);font-size:12px;color:var(--ink-dim);}
+.btn{font-family:var(--font-m);font-size:12.5px;background:var(--simp);color:#fff;border:none;border-radius:9px;padding:11px 20px;cursor:pointer;}
+.btn:hover{filter:brightness(1.1);}
+.result-screen{text-align:center;padding:30px 10px;}
+.result-screen .big{font-family:var(--font-d);font-size:52px;font-weight:700;}
+
+/* compare */
+.compare-select{display:flex;gap:14px;margin-bottom:24px;flex-wrap:wrap;}
+.compare-select select{background:var(--panel);border:1px solid var(--hair);color:var(--ink);padding:10px 14px;border-radius:10px;font-family:var(--font-b);font-size:13.5px;min-width:220px;}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media (max-width:700px){.compare-grid{grid-template-columns:1fr;}}
+.compare-card{border-radius:14px;padding:20px;border:1px solid var(--hair);background:var(--panel);}
+.compare-card h4{font-family:var(--font-d);font-size:16px;margin:0 0 14px;color:var(--c-accent,#fff);}
+.compare-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--hair);font-size:13px;}
+.compare-row .k{color:var(--ink-faint);font-family:var(--font-m);font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;width:110px;flex-shrink:0;}
+.compare-row .v{color:#e2e4e9;text-align:right;}
+
+.toc-list{display:flex;flex-direction:column;gap:8px;}
+.toc-item{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;background:var(--panel-alt);font-size:13px;cursor:pointer;}
+.toc-item:hover{outline:1px solid var(--hair);}
+.toc-item .n{font-family:var(--font-m);color:var(--ink-faint);font-size:11px;width:16px;}
+
+.legend-row{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--font-m);font-size:10.5px;color:var(--ink-dim);margin-top:10px;}
+.legend-row span{display:flex;align-items:center;gap:6px;}
+.legend-row i{width:9px;height:9px;border-radius:2px;display:inline-block;}
+
+/* ---------- interactivity: hot elements + tooltip ---------- */
+.hot{cursor:pointer;}
+.hot:hover{ filter:brightness(1.35); }
+.hot:focus{outline:none;}
+.hint-line{font-family:var(--font-m);font-size:10px;color:var(--ink-faint);display:flex;align-items:center;gap:6px;margin-top:10px;}
+.hint-line::before{content:'◎';color:var(--simp);}
+
+#tooltip{
+  position:fixed;z-index:200;max-width:260px;background:#1b1f28;border:1px solid var(--hair);border-radius:12px;
+  padding:14px 16px;box-shadow:0 18px 40px rgba(0,0,0,.5);opacity:0;transform:translateY(6px) scale(.98);
+  pointer-events:none;transition:opacity .16s ease, transform .16s ease;
+}
+#tooltip.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
+#tooltip .tt-title{font-family:var(--font-d);font-size:13.5px;font-weight:700;color:var(--tt-c,#fff);margin-bottom:6px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+#tooltip .tt-desc{font-size:12.5px;line-height:1.55;color:#cfd3da;}
+#tooltip .tt-close{font-family:var(--font-m);font-size:13px;color:var(--ink-faint);cursor:pointer;line-height:1;}
+#tooltip .tt-close:hover{color:#fff;}
+#tooltip::before{content:'';position:absolute;left:18px;bottom:-6px;width:11px;height:11px;background:#1b1f28;border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);transform:rotate(45deg);}
+
+/* diagram toolbar (toggles / playback) */
+.diagram-toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.toggle-btn{font-family:var(--font-m);font-size:10.5px;background:var(--panel-alt);border:1px solid var(--hair);color:var(--ink-dim);padding:6px 10px;border-radius:20px;cursor:pointer;transition:all .15s;}
+.toggle-btn.active{color:#fff;border-color:var(--tb-c,var(--simp));background:color-mix(in srgb, var(--tb-c,var(--simp)) 22%, transparent);}
+.play-btn{font-family:var(--font-m);font-size:11px;background:var(--panel-alt);border:1px solid var(--hair);color:var(--ink);padding:8px 14px;border-radius:20px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;margin-top:12px;transition:all .15s;}
+.play-btn:hover{border-color:var(--ink-dim);}
+.play-btn:active{transform:scale(.97);}
+.race-readout{font-family:var(--font-m);font-size:10px;color:var(--ink-faint);margin-top:6px;min-height:14px;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIGNATURE RAIL: segmental levels -->
+  <div class="rail" id="rail"></div>
+
+  <!-- SIDEBAR NAV -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="eyebrow">Neuroanatomía · Aferencias</div>
+      <h1>Vías Sensitivas Viscerales</h1>
+      <div class="sub">Atlas interactivo · basado en la clase del Dr. J. Leñero, UCSC</div>
+    </div>
+    <div id="navlist"></div>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav">
+    <select id="mobileSelect"></select>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main"></div>
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+/* =========================================================================
+   DATA MODEL
+   ========================================================================= */
+const C = { simp:'#e2493c', para:'#42b788', somatic:'#e3b23c', neo:'#f2924a', pbr:'#9d80e6', dorsal:'#4d9fe0', mix:'#9399a8' };
+
+// segmental level rail groups (for the signature element)
+const LEVELS = ['C1','C2','C3','C4','C5','C6','C7','C8','T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','L3','L4','L5','S1','S2','S3','S4','S5'];
+
+/* =========================================================================
+   INTERACTIVE TOOLTIP SYSTEM — every "hot" structure in a diagram is clickable
+   ========================================================================= */
+function showTip(x, y, title, desc, color){
+  const tip = document.getElementById('tooltip');
+  tip.style.setProperty('--tt-c', color || '#fff');
+  tip.innerHTML = `<div class="tt-title"><span>${title}</span><span class="tt-close">×</span></div><div class="tt-desc">${desc}</div>`;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let left = x + 16, top = y + 16;
+  tip.style.left = '0px'; tip.style.top='0px'; tip.classList.add('show');
+  requestAnimationFrame(()=>{
+    const r = tip.getBoundingClientRect();
+    if(left + r.width > vw - 12) left = x - r.width - 16;
+    if(top + r.height > vh - 12) top = y - r.height - 16;
+    if(left<8) left=8; if(top<8) top=8;
+    tip.style.left = left+'px'; tip.style.top = top+'px';
+  });
+  tip.querySelector('.tt-close').addEventListener('click', hideTip);
+}
+function hideTip(){ document.getElementById('tooltip').classList.remove('show'); }
+
+document.addEventListener('click', (e)=>{
+  const hot = e.target.closest('.hot');
+  if(hot){
+    const t = hot.dataset.t, d = hot.dataset.d, c = hot.dataset.c || '#fff';
+    if(t){ showTip(e.clientX, e.clientY, t, d, c); return; }
+  }
+  if(!e.target.closest('#tooltip')) hideTip();
+});
+window.addEventListener('scroll', hideTip, true);
+
+/* ---------- generic vertical "chain" SVG builder (organ -> cortex) ---------- */
+let __svgUid = 0;
+function chainSVG(nodes, accent){
+  const uid = 'ch'+(__svgUid++);
+  const w=340, nodeH=58, gap=24, padTop=28, padBot=28;
+  const totalH = padTop+padBot+ nodes.length*nodeH + (nodes.length-1)*gap;
+  const cx = w/2;
+  let y = totalH - padBot - nodeH/2;
+  const pos = [];
+  nodes.forEach(()=>{ pos.push(y); y -= (nodeH+gap); });
+  let arrows='', items='', pulses='';
+  nodes.forEach((n,i)=>{
+    const cy = pos[i];
+    const on = n.active !== false;
+    const fillOpacity = on ? '26':'10';
+    const stroke = on ? accent : '#333a46';
+    const labelColor = on ? '#ffffff' : '#5a6170';
+    const subColor = on ? accent : '#454b58';
+    const tip = (n.detail || n.sub || '').replace(/"/g,'&quot;');
+    items += `<g class="hot" tabindex="0" data-t="${(n.label||'').replace(/"/g,'&quot;')}" data-d="${tip}" data-c="${accent}">
+      <rect x="${cx-140}" y="${cy-27}" width="280" height="54" rx="12" fill="${accent}${fillOpacity}" stroke="${stroke}" stroke-width="1.4"/>
+      <circle cx="${cx-124}" cy="${cy}" r="4.5" fill="${on?accent:'#3a4150'}"/>
+      <text x="${cx}" y="${cy-4}" text-anchor="middle" class="node-label" fill="${labelColor}">${n.label}</text>
+      ${n.sub ? `<text x="${cx}" y="${cy+15}" text-anchor="middle" class="node-sub" fill="${subColor}">${n.sub}</text>` : ''}
+      <text x="${cx+124}" y="${cy+3}" text-anchor="middle" font-family="IBM Plex Mono" font-size="11" fill="${on?accent:'#454b58'}" opacity="0.85">＋</text>
+    </g>`;
+    if(i < nodes.length-1){
+      const cy2 = pos[i+1];
+      const pid = `${uid}p${i}`;
+      arrows += `<line x1="${cx}" y1="${cy-27}" x2="${cx}" y2="${cy2+29}" stroke="${accent}" stroke-width="2" marker-end="url(#arrow-${uid})" opacity="0.6"/>`;
+      pulses += `<circle r="4" fill="${accent}" style="filter:drop-shadow(0 0 4px ${accent})">
+        <animateMotion dur="1.6s" begin="${i*0.35}s" repeatCount="indefinite"
+          path="M ${cx},${cy-30} L ${cx},${cy2+30}"/>
+        <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.85;1" dur="1.6s" begin="${i*0.35}s" repeatCount="indefinite"/>
+      </circle>`;
+    }
+  });
+  return `<svg viewBox="0 0 ${w} ${totalH}" class="chain-svg" xmlns="http://www.w3.org/2000/svg">
+    <defs><marker id="arrow-${uid}" markerWidth="9" markerHeight="9" refX="4.5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 z" fill="${accent}"/></marker></defs>
+    ${arrows}${items}${pulses}
+    <text x="${cx}" y="${totalH-8}" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#454b58">PERIFERIA → CORTEZA (ascendente) · toca "＋" para el detalle</text>
+  </svg>`;
+}
+
+/* ---------- spinal cord cross-section with Rexed laminae ---------- */
+const LAMINA_INFO = {
+  I:   {name:'Lámina I · núcleo marginal',        d:'Recibe fibras Aδ y C nociceptivas. Origen del tracto neoespinotalámico: dolor agudo y bien localizado.'},
+  V:   {name:'Lámina V · zona de convergencia',   d:'Neurona de "amplio rango dinámico": recibe simultáneamente fibra visceral y fibra somática (piel). Es la base anatómica del dolor referido.'},
+  VII: {name:'Láminas VII–VIII · zona intermedia',d:'Procesa reflejos autonómicos segmentarios y proyecta hacia el tracto espinorreticular (dolor difuso y alerta).'},
+  X:   {name:'Lámina X · comisural',              d:'Rodea el canal central; recibe aferencias viscerales bilaterales y participa en la vía espinoparabraquial.'},
+};
+function cordSVG(highlight, accent, opts={}){
+  highlight = highlight || [];
+  const uid = 'cd'+(__svgUid++);
+  const on = id => highlight.includes(id);
+  const pts = {
+    I:   {x:150,y:50},
+    V:   {x:150,y:80},
+    VII: {x:124,y:118},
+    X:   {x:150,y:150},
+  };
+  let dots='';
+  Object.entries(pts).forEach(([id,p])=>{
+    const active = on(id);
+    const info = LAMINA_INFO[id];
+    dots += `<g class="hot" tabindex="0" data-t="${info.name}" data-d="${info.d}" data-c="${accent}">
+      <circle cx="${p.x}" cy="${p.y}" r="13" fill="transparent"/>
+      <circle cx="${p.x}" cy="${p.y}" r="${active?6.5:4.5}" fill="${active?accent:'#3a4150'}" ${active?`style="filter:drop-shadow(0 0 6px ${accent})"`:''}>
+        ${active?`<animate attributeName="r" values="6.5;8;6.5" dur="1.8s" repeatCount="indefinite"/>`:''}
+      </circle>
+      <text x="${p.x + (p.x>=150?16:-16)}" y="${p.y+4}" font-family="IBM Plex Mono" font-size="9.5" font-weight="600" fill="${active?'#fff':'#5a6170'}" text-anchor="${p.x>=150?'start':'end'}">${id}</text>
+    </g>`;
+  });
+  const dorsalCol = opts.dorsalTract ? accent : '#333a46';
+  const anterolatCol = opts.anterolateral ? accent : '#333a46';
+  const dPulse = opts.dorsalTract ? `<circle r="4.5" fill="${accent}" style="filter:drop-shadow(0 0 5px ${accent})">
+      <animateMotion dur="1.8s" repeatCount="indefinite" path="M185,105 L150,80 A105,105 0 0,1 ${uid?190:190},60 L150,14"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="1.8s" repeatCount="indefinite"/>
+    </circle>` : '';
+  const aPulse = opts.anterolateral ? `<circle r="4.5" fill="${accent}" style="filter:drop-shadow(0 0 5px ${accent})">
+      <animateMotion dur="1.8s" repeatCount="indefinite" path="M185,105 L150,80 L65,140 A105,105 0 0,1 20,115"/>
+      <animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="1.8s" repeatCount="indefinite"/>
+    </circle>` : '';
+  return `<svg viewBox="0 0 300 300" class="schem-svg" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="150" cy="150" r="105" fill="#171a21" stroke="#2a2f3a" stroke-width="1.5"/>
+    <circle cx="150" cy="150" r="6" fill="#0a0c11" stroke="#3a4150" stroke-width="1"/>
+    <path d="M150,55 C130,70 128,95 140,115 C120,125 112,150 140,150 C112,150 120,175 140,185 C128,205 130,230 150,245
+             C170,230 172,205 160,185 C180,175 188,150 160,150 C188,150 180,125 160,115 C172,95 170,70 150,55 Z"
+          fill="#20242e" stroke="#3a4150" stroke-width="1"/>
+    <!-- posterior (dorsal) funiculus -->
+    <path d="M110,60 A105,105 0 0,1 190,60" fill="none" stroke="${dorsalCol}" stroke-width="6" opacity="${opts.dorsalTract?0.85:0.22}" stroke-linecap="round"/>
+    <!-- anterolateral funiculus -->
+    <path d="M55,150 A105,105 0 0,1 90,235" fill="none" stroke="${anterolatCol}" stroke-width="6" opacity="${opts.anterolateral?0.85:0.22}" stroke-linecap="round"/>
+    <path d="M245,150 A105,105 0 0,0 210,235" fill="none" stroke="${anterolatCol}" stroke-width="6" opacity="${opts.anterolateral?0.85:0.22}" stroke-linecap="round"/>
+    ${dots}
+    <!-- dorsal root / DRG -->
+    <g class="hot" tabindex="0" data-t="Ganglio de la raíz dorsal (GRD)" data-d="1ª neurona sensitiva (soma pseudounipolar). Recibe la aferencia visceral periférica antes de ingresar a la médula." data-c="${accent}">
+      <ellipse cx="255" cy="90" rx="17" ry="12" fill="#20242e" stroke="${accent}" stroke-width="1.4"/>
+      <text x="255" y="93" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${accent}">DRG</text>
+      <line x1="238" y1="96" x2="186" y2="106" stroke="${accent}" stroke-width="1.8"/>
+    </g>
+    <line x1="150" y1="45" x2="150" y2="12" stroke="${dorsalCol}" stroke-width="2.6" opacity="${opts.dorsalTract?0.9:0.2}"/>
+    <line x1="65" y1="140" x2="18" y2="113" stroke="${anterolatCol}" stroke-width="2.6" opacity="${opts.anterolateral?0.9:0.2}"/>
+    ${dPulse}${aPulse}
+    <text x="150" y="284" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#565d6c">CORTE MEDULAR · ASTA DORSAL · toca cada lámina</text>
+  </svg>`;
+}
+
+/* ---------- peripheral fiber cross-section (micro) : C vs A-delta ---------- */
+function fibersSVG(){
+  let cAxons='';
+  for(let i=0;i<9;i++){
+    const a = i*(2*Math.PI/9);
+    const x = 85 + 34*Math.cos(a), y = 85 + 34*Math.sin(a);
+    cAxons += `<circle cx="${x}" cy="${y}" r="6" fill="#171a21" stroke="${C.somatic}" stroke-width="1.3" opacity="0.9"/>`;
+  }
+  let adAxons='';
+  for(let i=0;i<3;i++){
+    const x = 205 + i*38, y = 85;
+    adAxons += `<circle cx="${x}" cy="${y}" r="15" fill="none" stroke="${C.neo}" stroke-width="4" opacity="0.85"/>
+                <circle cx="${x}" cy="${y}" r="7" fill="#171a21" stroke="${C.neo}" stroke-width="1.3"/>`;
+  }
+  return `<svg viewBox="0 0 300 250" class="schem-svg" xmlns="http://www.w3.org/2000/svg">
+    <g class="hot" tabindex="0" data-t="Fibras C (amielínicas)" data-d="Sin vaina de mielina. Conducción 0.5–2 m/s. Responsables del dolor visceral crónico, difuso, sordo o quemante (2º dolor)." data-c="${C.somatic}">
+      <circle cx="85" cy="85" r="55" fill="#12151c" stroke="#2a2f3a" stroke-width="1.5"/>
+      ${cAxons}
+    </g>
+    <g class="hot" tabindex="0" data-t="Fibras Aδ (mielinización ligera)" data-d="Mielina delgada. Conducción 5–30 m/s. Transmiten alerta inmediata: dolor agudo, punzante, bien localizado (1er dolor)." data-c="${C.neo}">
+      <circle cx="230" cy="85" r="55" fill="#12151c" stroke="#2a2f3a" stroke-width="1.5"/>
+      ${adAxons}
+    </g>
+    <text x="85" y="155" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="${C.somatic}">Fibras C</text>
+    <text x="85" y="168" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#565d6c">0.5–2 m/s · dolor sordo</text>
+    <text x="230" y="155" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="${C.neo}">Fibras Aδ</text>
+    <text x="230" y="168" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#565d6c">5–30 m/s · dolor punzante</text>
+
+    <!-- conduction race track -->
+    <text x="150" y="192" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#454b58">PISTA DE CONDUCCIÓN (misma distancia axonal)</text>
+    <line x1="20" y1="205" x2="280" y2="205" stroke="#2a2f3a" stroke-width="10" stroke-linecap="round"/>
+    <line x1="20" y1="228" x2="280" y2="228" stroke="#2a2f3a" stroke-width="10" stroke-linecap="round"/>
+    <text x="12" y="209" text-anchor="end" font-family="IBM Plex Mono" font-size="8" fill="${C.somatic}">C</text>
+    <text x="12" y="232" text-anchor="end" font-family="IBM Plex Mono" font-size="8" fill="${C.neo}">Aδ</text>
+    <circle id="raceDotC" cx="20" cy="205" r="6" fill="${C.somatic}" style="filter:drop-shadow(0 0 5px ${C.somatic})">
+      <animateMotion id="animC" begin="indefinite" dur="4.2s" fill="freeze" path="M0,0 L260,0"/>
+    </circle>
+    <circle id="raceDotAd" cx="20" cy="228" r="6" fill="${C.neo}" style="filter:drop-shadow(0 0 5px ${C.neo})">
+      <animateMotion id="animAd" begin="indefinite" dur="0.6s" fill="freeze" path="M0,0 L260,0"/>
+    </circle>
+  </svg>`;
+}
+function initFiberRace(){
+  const btn = document.getElementById('fiberPlayBtn');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    const c = document.getElementById('raceDotC'), ad = document.getElementById('raceDotAd');
+    const dc = document.getElementById('raceDotC').cloneNode(false); // no-op guard
+    document.getElementById('raceDotC').setAttribute('cx','20');
+    document.getElementById('raceDotAd').setAttribute('cx','20');
+    document.getElementById('animC').beginElement();
+    document.getElementById('animAd').beginElement();
+    const readout = document.getElementById('fiberReadout');
+    readout.textContent = 'Aδ llega primero → "primer dolor" agudo. C llega después → "segundo dolor" sordo y sostenido.';
+    setTimeout(()=>{ if(readout) readout.textContent += '  ✓ carrera terminada'; }, 4300);
+  });
+}
+
+/* ---------- body silhouette: sympathetic vs parasympathetic outflow (togglable layers) ---------- */
+function bodyPathsSVG(){
+  return `<svg viewBox="0 0 260 380" class="schem-svg" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="130" cy="34" rx="22" ry="26" fill="#171a21" stroke="#3a4150"/>
+    <rect x="95" y="60" width="70" height="150" rx="26" fill="#171a21" stroke="#3a4150"/>
+    <rect x="70" y="210" width="52" height="150" rx="18" fill="#171a21" stroke="#3a4150"/>
+    <rect x="138" y="210" width="52" height="150" rx="18" fill="#171a21" stroke="#3a4150"/>
+
+    <g id="layer-para" style="transition:opacity .25s">
+      <!-- vagus (parasympathetic, cranial) -->
+      <g class="hot" tabindex="0" data-t="Nervio vago (X)" data-d="Aferencia/eferencia parasimpática craneal: reflejos de corazón, pulmón, esófago, estómago e intestino proximal." data-c="${C.para}">
+        <path d="M130,58 C122,90 122,120 118,150" fill="none" stroke="${C.para}" stroke-width="3"/>
+        <circle cx="115" cy="150" r="7" fill="${C.para}"/>
+        <text x="128" y="153" font-family="IBM Plex Mono" font-size="8.5" fill="${C.para}">Vago (X)</text>
+      </g>
+      <!-- sacral parasympathetic -->
+      <g class="hot" tabindex="0" data-t="Nervios pélvicos (S2–S4)" data-d="Parasimpático sacro: controla reflejos de vejiga, recto y genitales (micción, defecación, erección)." data-c="${C.para}">
+        <path d="M118,210 C110,225 108,235 112,246" fill="none" stroke="${C.para}" stroke-width="3"/>
+        <circle cx="112" cy="246" r="7" fill="${C.para}"/>
+        <text x="122" y="240" font-family="IBM Plex Mono" font-size="8" fill="${C.para}">N. pélvicos (S2–S4)</text>
+      </g>
+    </g>
+
+    <g id="layer-simp" style="transition:opacity .25s">
+      <!-- sympathetic chain -->
+      <g class="hot" tabindex="0" data-t="Cadena simpática (T1–L2)" data-d="Aferencia nociceptiva: isquemia, distensión e inflamación viajan sin sinapsis por aquí hacia el ganglio de la raíz dorsal." data-c="${C.simp}">
+        <path d="M150,80 C158,110 158,150 150,185" fill="none" stroke="${C.simp}" stroke-width="3"/>
+        <circle cx="150" cy="150" r="6" fill="${C.simp}"/>
+        <text x="158" y="112" font-family="IBM Plex Mono" font-size="8.5" fill="${C.simp}">Cadena simpática (T1–L2)</text>
+      </g>
+      <!-- celiac ganglion -->
+      <g class="hot" tabindex="0" data-t="Ganglio celíaco" data-d="Relevo simpático abdominal principal: recibe nervios esplácnicos de estómago, hígado, páncreas e intestino." data-c="${C.simp}">
+        <circle cx="128" cy="168" r="9" fill="#20242e" stroke="${C.simp}" stroke-width="1.4"/>
+        <text x="128" y="171" text-anchor="middle" font-family="IBM Plex Mono" font-size="7" fill="${C.simp}">G.CEL</text>
+        <path d="M128,168 L110,190" stroke="${C.simp}" stroke-width="2"/>
+        <path d="M128,168 L150,190" stroke="${C.simp}" stroke-width="2"/>
+      </g>
+    </g>
+
+    <!-- organs (always visible) -->
+    <g class="hot" tabindex="0" data-t="Corazón / pulmón" data-d="Doble inervación aferente: simpática (isquemia → dolor anginoso) y parasimpática (vago → reflejos barorreceptor/quimiorreceptor)." data-c="${C.somatic}">
+      <circle cx="110" cy="190" r="9" fill="#20242e" stroke="${C.somatic}" stroke-width="1.4"/>
+      <text x="98" y="202" font-family="IBM Plex Mono" font-size="7.5" fill="${C.somatic}">corazón/pulmón</text>
+    </g>
+    <g class="hot" tabindex="0" data-t="Estómago / intestino" data-d="Aferencia visceral mixta: distensión (mecanorreceptores) e isquemia/inflamación (nociceptores), con relevo en el ganglio celíaco." data-c="${C.somatic}">
+      <circle cx="150" cy="192" r="9" fill="#20242e" stroke="${C.somatic}" stroke-width="1.4"/>
+      <text x="150" y="216" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="${C.somatic}">estómago/intestino</text>
+    </g>
+    <g class="hot" tabindex="0" data-t="Vejiga / genitales" data-d="Inervación pélvica doble: parasimpática (reflejo de vaciamiento) y simpática (dolor/distensión, niveles T11–L2)." data-c="${C.somatic}">
+      <circle cx="112" cy="246" r="9" fill="#20242e" stroke="${C.somatic}" stroke-width="1.4" opacity="0"/>
+      <text x="112" y="270" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.5" fill="${C.somatic}">vejiga / genitales</text>
+    </g>
+
+    <text x="130" y="20" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#565d6c">SNA VISCERAL: AFERENCIA COMPARTIDA</text>
+    <g>
+      <circle cx="30" cy="330" r="5" fill="${C.simp}"/><text x="40" y="334" font-family="IBM Plex Mono" font-size="8" fill="${C.simp}">Simpático (alarma)</text>
+      <circle cx="30" cy="350" r="5" fill="${C.para}"/><text x="40" y="354" font-family="IBM Plex Mono" font-size="8" fill="${C.para}">Parasimpático (reflejo)</text>
+    </g>
+  </svg>`;
+}
+function initBodyPaths(){
+  const bar = document.getElementById('bodyToolbar');
+  if(!bar) return;
+  bar.querySelectorAll('.toggle-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      bar.querySelectorAll('.toggle-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const layer = btn.dataset.layer;
+      const simp = document.getElementById('layer-simp'), para = document.getElementById('layer-para');
+      if(!simp || !para) return;
+      simp.style.opacity = (layer==='all'||layer==='simp') ? '1' : '0.08';
+      para.style.opacity = (layer==='all'||layer==='para') ? '1' : '0.08';
+    });
+  });
+}
+
+/* ---------- dermatome / referred pain map ---------- */
+const DERMA_INFO = {
+  C4:{d:'Dermatoma cervical bajo: hombro. Puede coincidir con dolor referido diafragmático (irritación frénica).'},
+  T2:{d:'Dermatoma torácico alto: región superior del pecho y cara medial del brazo.'},
+  T3:{d:'Nivel de entrada de fibras cardíacas simpáticas — inicio de la zona de convergencia.'},
+  T4:{d:'Nivel de máxima convergencia víscero-somática cardíaca (junto a T3): pico del dolor referido anginoso.'},
+  T5:{d:'Límite inferior de la zona de convergencia cardíaca; también relevante para dolor referido gástrico/esofágico.'},
+};
+function dermatomeSVG(){
+  const bands = ['C4','T2','T3','T4','T5'];
+  let rows='';
+  bands.forEach((b,i)=>{
+    const y = 40 + i*22;
+    const isHigh = (b==='T3'||b==='T4');
+    rows += `<g class="hot" tabindex="0" data-t="Dermatoma ${b}" data-d="${DERMA_INFO[b].d}" data-c="${isHigh?C.simp:C.mix}">
+      <rect x="70" y="${y}" width="120" height="20" fill="${isHigh? C.simp+'33':'transparent'}" stroke="#2a2f3a"/>
+      <text x="60" y="${y+14}" text-anchor="end" font-family="IBM Plex Mono" font-size="9" fill="${isHigh?C.simp:'#565d6c'}">${b}</text>
+    </g>`;
+  });
+  return `<svg viewBox="0 0 300 260" class="schem-svg" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="130" cy="24" rx="16" ry="18" fill="#171a21" stroke="#3a4150"/>
+    <rect x="70" y="40" width="120" height="110" fill="#171a21" stroke="#3a4150"/>
+    ${rows}
+    <g class="hot" tabindex="0" data-t="Corazón (isquemia)" data-d="Fuente real del dolor. Las fibras simpáticas aferentes entran por T1–T5 y convergen con la piel del pecho/brazo en la lámina V." data-c="${C.simp}">
+      <circle id="dermaHeart" cx="130" cy="90" r="12" fill="${C.simp}" opacity="0.85"/>
+      <text x="130" y="94" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#fff">♥</text>
+    </g>
+    <!-- left arm referred zone -->
+    <g class="hot" tabindex="0" data-t="Brazo izquierdo — dolor referido" data-d="No hay lesión aquí: el cerebro proyecta el dolor cardíaco hacia este dermatoma por la convergencia en lámina V (T1–T5)." data-c="${C.simp}">
+      <rect id="dermaArm" x="10" y="60" width="55" height="95" rx="14" fill="${C.simp}22" stroke="${C.simp}" stroke-width="1.6" stroke-dasharray="4 3"/>
+      <text x="37" y="165" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.simp}">brazo izq. (referido)</text>
+    </g>
+    <rect x="205" y="60" width="45" height="95" rx="14" fill="#171a21" stroke="#3a4150"/>
+    <path id="dermaSignal" d="M130,90 C90,90 60,90 37,110" fill="none" stroke="${C.simp}" stroke-width="0" opacity="0"/>
+    <text x="150" y="200" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#565d6c">CONVERGENCIA EN LÁMINA V (T1–T5)</text>
+    <text x="150" y="214" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="#565d6c">isquemia cardíaca ≈ dermatoma C8–T4</text>
+  </svg>`;
+}
+function initDermatome(){
+  const btn = document.getElementById('dermaPlayBtn');
+  if(!btn) return;
+  btn.addEventListener('click', ()=>{
+    const heart = document.getElementById('dermaHeart'), arm = document.getElementById('dermaArm');
+    if(!heart || !arm) return;
+    [heart, arm].forEach(el=>{
+      el.style.transition='none';
+      el.animate([
+        {filter:'drop-shadow(0 0 0px #e2493c)'},
+        {filter:'drop-shadow(0 0 12px #e2493c)'},
+        {filter:'drop-shadow(0 0 0px #e2493c)'}
+      ], {duration:900, iterations:3});
+    });
+    const readout = document.getElementById('dermaReadout');
+    if(readout) readout.textContent = 'El SNC recibe la señal del corazón y la piel simultáneamente en T1–T5 → el paciente "siente" el dolor en el brazo.';
+  });
+}
+
+/* ---------- reusable four-module horizontal flow (síntesis) ---------- */
+function modulesSVG(mods, accent){
+  const w=340, boxW=150, boxH=60;
+  let rows='', arrows='';
+  mods.forEach((m,i)=>{
+    const col = i%2, row = Math.floor(i/2);
+    const x = 12 + col*(boxW+10), y = 14 + row*(boxH+34);
+    const tip = (m.detail || m.s || '').replace(/"/g,'&quot;');
+    rows += `<g class="hot" tabindex="0" data-t="Módulo ${i+1} · ${m.t}" data-d="${tip}" data-c="${accent}">
+      <rect x="${x}" y="${y}" width="${boxW}" height="${boxH}" rx="10" fill="${accent}18" stroke="${accent}" stroke-width="1.3"/>
+      <text x="${x+boxW/2}" y="${y+22}" text-anchor="middle" font-family="IBM Plex Mono" font-size="9" fill="${accent}">MÓD. ${i+1}</text>
+      <text x="${x+boxW/2}" y="${y+38}" text-anchor="middle" class="node-label" font-size="10.5" fill="#fff">${m.t}</text>
+      <text x="${x+boxW/2}" y="${y+52}" text-anchor="middle" font-family="IBM Plex Mono" font-size="7.8" fill="#9399a8">${m.s}</text>
+    </g>`;
+    if(col===0 && i+1<mods.length){
+      arrows += `<line x1="${x+boxW+2}" y1="${y+boxH/2}" x2="${x+boxW+8}" y2="${y+boxH/2}" stroke="${accent}" stroke-width="2" opacity="0.6"/>`;
+    }
+  });
+  return `<svg viewBox="0 0 ${w} 190" class="schem-svg" xmlns="http://www.w3.org/2000/svg">${arrows}${rows}</svg>`;
+}
+
+/* =========================================================================
+   SECTIONS
+   ========================================================================= */
+const SECTIONS = [
+{
+  id:'intro', kind:'intro', num:'00', title:'Introducción general', accent:C.mix, levels:[],
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.mix}"><h3>Definición</h3><p>La aferencia visceral es el componente sensorial del eje autonómico: un conjunto de vías que transmiten información desde los <b>interoceptores</b> (receptores del medio interno) hacia el sistema nervioso central, encargadas de codificar la <b>homeostasis orgánica</b>.</p></div>
+    <div class="card" style="--card-accent:${C.mix}"><h3>Características generales</h3><ul><li>Ingresan a la médula por raíces dorsales <b>compartidas</b> con el simpático y el parasimpático.</li><li>Conducidas principalmente por fibras <b>lentas</b> (C y Aδ).</li><li><b>Convergencia viscerosomática</b> en el asta dorsal → base del dolor referido.</li></ul></div>
+    <div class="card" style="--card-accent:${C.simp}"><h3>Clasificación</h3><ul><li>Según sistema: <b>simpática</b> (nocicepción/alarma) o <b>parasimpática</b> (reflejos fisiológicos).</li><li>Según destino: espinal (médula) o bulbar (núcleo del tracto solitario, vía nervios craneales IX/X).</li><li>Según tracto ascendente: neoespinotalámico, espinorreticular, espinoparabraquial, columna dorsal postsináptica.</li></ul></div>
+    <div class="card" style="--card-accent:${C.para}"><h3>Funciones</h3><ul><li>Percepción consciente y localización (difusa) del dolor visceral.</li><li>Reflejos autonómicos (presión arterial, pH, saciedad, frecuencia cardíaca).</li><li>Interocepción: traduce el estado metabólico en respuesta afectiva y de alerta (SARA).</li></ul></div>
+    <div class="card" style="--card-accent:${C.somatic}"><h3>Etiología / estímulos críticos</h3><ul><li><b>Distensión</b> de vísceras huecas o cápsulas.</li><li><b>Isquemia</b>: acumulación de metabolitos ácidos.</li><li><b>Inflamación</b>: sensibilización química de nociceptores.</li></ul></div>
+    <div class="card" style="--card-accent:${C.neo}"><h3>Órganos involucrados</h3><p>Corazón, pulmón/bronquios, hígado, páncreas, estómago, bazo, intestinos (proximal y distal), riñón, glándula suprarrenal, vejiga y genitales — todos con inervación aferente doble (simpática y parasimpática) que converge en la médula o en el bulbo (NTS).</p></div>
+  </div>
+  <div class="card" style="margin-top:16px;--card-accent:${C.mix}"><h3>Mapa de las vías que veremos</h3>
+    <div class="toc-list" id="tocList"></div>
+  </div>`
+},
+{
+  id:'clasif', kind:'chain', num:'01', title:'Clasificación del SNA: aferencia simpática vs. dolor referido parasimpático', accent:C.simp,
+  levels:['T1','T2','T3','T4','T5','T6','T7','T8','T9','T10','T11','T12','L1','L2','S2','S3','S4'],
+  diagram:{type:'bodypaths'},
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.simp}"><h3>Aferencia visceral simpática</h3><ul><li>Trayecto: órgano → nervios esplácnicos → cadena simpática (sin sinapsis) → ganglio de la raíz dorsal (T1–L2).</li><li>Función: <b>nocicepción</b> — isquemia, distensión, inflamación.</li><li>Genera dolor difuso, mal localizado, y activa respuesta de alarma (SNA + sistema límbico).</li></ul></div>
+    <div class="card" style="--card-accent:${C.para}"><h3>Dolor referido / vía parasimpática</h3><ul><li>Trayecto: vago (X) y nervios pélvicos (S2–S4) → núcleo del tracto solitario o médula sacra.</li><li>Función: <b>reflejos fisiológicos</b> — presión arterial, pH, saciedad, motilidad.</li><li>No suele doler; regula la homeostasis de forma inconsciente.</li></ul></div>
+  </div>
+  <div class="callout" style="--acc:${C.simp};margin-top:16px"><b>Clave:</b> ambas divisiones comparten ganglios de entrada con el sistema somático, lo que explica por qué el dolor visceral puede "confundirse" con dolor de piel (dolor referido).</div>
+  <div class="card" style="margin-top:16px"><h3>División anatómica y funcional del sistema nervioso</h3>
+    <div class="grid2">
+      <div><p><b>SNC:</b> encéfalo y médula espinal — integración y procesamiento.<br><b>SNP:</b> nervios craneales, espinales y ganglios — conexión con la periferia.</p></div>
+      <div><p><b>Somático:</b> interacción voluntaria/consciente con el medio externo.<br><b>Autónomo/visceral:</b> regulación involuntaria del medio interno (homeostasis).</p></div>
+    </div>
+  </div>`
+},
+{
+  id:'mecanismos', kind:'custom', num:'02', title:'Mecanismos de activación', accent:C.somatic, levels:[],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Micro · terminal nociceptivo</div>${fibersSVGmini()}</div>
+    <div class="info-col">
+      <div class="grid2">
+        <div class="card" style="--card-accent:${C.simp}"><h3>Distensión</h3><p>Estímulos mecánicos en vísceras huecas y estiramiento de cápsulas orgánicas (ej. distensión intestinal, capsular hepática/renal).</p></div>
+        <div class="card" style="--card-accent:${C.neo}"><h3>Isquemia</h3><p>Acumulación de metabolitos ácidos (H⁺, lactato, bradicinina) y falta de oxigenación tisular.</p></div>
+        <div class="card" style="--card-accent:${C.somatic}"><h3>Inflamación</h3><p>Sensibilización química de nociceptores por mediadores locales (prostaglandinas, citoquinas).</p></div>
+        <div class="card" style="--card-accent:${C.para}"><h3>Convergencia</h3><p>Fibras viscerales y somáticas convergen en las mismas neuronas de 2° orden del asta dorsal.</p></div>
+      </div>
+      <div class="card"><h3>Interpretación y proyección</h3><p>El SNC interpreta la señal visceral como si proviniera del dermatoma cutáneo de mayor representación cortical, y el dolor se percibe en un sitio distante al órgano afectado (ej. hombro en colecistitis).</p></div>
+      <div class="callout" style="--acc:${C.somatic}">Arquitectura neuronal: <b>baja densidad de receptores</b> y <b>alta convergencia</b> → base estructural del dolor referido y de su carácter difuso.</div>
+    </div>
+  </div>`
+},
+{
+  id:'fibras', kind:'custom', num:'03', title:'Fibras aferentes: C y Aδ', accent:C.neo, levels:[],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Micro · corte transversal del nervio periférico</div>${fibersSVG()}
+      <button class="play-btn" id="fiberPlayBtn">▶ Reproducir carrera de conducción</button>
+      <div class="race-readout" id="fiberReadout">Presiona play y compara qué fibra llega primero al SNC.</div>
+      <div class="hint-line">Toca los círculos para ver el detalle de cada tipo de fibra.</div>
+    </div>
+    <div class="info-col">
+      <div class="card"><h3>Tabla comparativa</h3>
+      <table class="datatable"><thead><tr><th></th><th>Fibras C</th><th>Fibras Aδ</th></tr></thead><tbody>
+      <tr><td><b>Morfología</b></td><td>Amielínicas</td><td>Mielinización escasa/ligera</td></tr>
+      <tr><td><b>Conducción</b></td><td>Lenta (0.5–2 m/s)</td><td>Rápida (5–30 m/s)</td></tr>
+      <tr><td><b>Función</b></td><td>Dolor crónico, difuso, sordo, quemante o pulsátil ("segundo dolor")</td><td>Alerta inmediata, dolor agudo, punzante ("primer dolor")</td></tr>
+      <tr><td><b>Localización</b></td><td>Órganos internos y dolor somático tardío</td><td>Piel y tejidos somáticos (dolor localizado); también serosas viscerales</td></tr>
+      </tbody></table></div>
+      <div class="callout" style="--acc:${C.neo}">Ambas fibras entran por raíces dorsales compartidas, pero divergen luego hacia tractos distintos: las C alimentan el sistema paleoespinotalámico/espinorreticular; las Aδ, el neoespinotalámico.</div>
+    </div>
+  </div>`
+},
+{
+  id:'sensib', kind:'custom', num:'04', title:'Tipos de sensibilidad visceral', accent:C.mix, levels:[],
+  content:`
+  <div class="card"><h3>Relación sensibilidad → vía → decusación → relevancia clínica</h3>
+  <table class="datatable"><thead><tr><th>Sensibilidad</th><th>Vía / tracto</th><th>Decusación</th><th>Importancia clínica</th></tr></thead><tbody id="sensTable"></tbody></table></div>
+  <div class="callout" style="margin-top:16px;--acc:${C.mix}"><b>Regla práctica:</b> si el paciente señala el dolor con un solo dedo, viaja por la vía neoespinotalámica (localizado); si se toca con la palma completa, viaja por la vía paleoespinotalámica/espinorreticular (difuso).</div>`
+},
+{
+  id:'viaaferente', kind:'chain', num:'05', title:'Vía aferente visceral general (cadena de 3 neuronas)', accent:C.mix, levels:['T1','T2','L1'],
+  diagram:{type:'chain', nodes:[
+    {label:'Interoceptores', sub:'baro/quimio/nociceptores viscerales'},
+    {label:'1ª neurona', sub:'ganglio raíz dorsal / ganglios viscerales'},
+    {label:'2ª neurona', sub:'asta dorsal medular o NTS bulbar'},
+    {label:'3ª neurona', sub:'tálamo (VPL / VPM)'},
+    {label:'Corteza insular', sub:'percepción consciente visceral'},
+  ]},
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.mix}"><h3>Definición</h3><p>Vías aferentes que transmiten información desde interoceptores hacia el SNC, caracterizadas por la <b>convergencia viscerosomática</b>.</p></div>
+    <div class="card" style="--card-accent:${C.mix}"><h3>Destino cortical principal</h3><p>La <b>ínsula</b> (corteza insular) es el destino cortical característico de la vía visceral, junto a la corteza somatosensorial y el cíngulo anterior (componente afectivo).</p></div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Organización clásica en 3 neuronas</h3>
+    <ul><li><b>1ª neurona:</b> ganglio de la raíz dorsal (nivel torácico/simpático) o ganglios viscerales.</li>
+    <li><b>2ª neurona:</b> médula (asta dorsal viscerosomática) o tronco (núcleo del tracto solitario).</li>
+    <li><b>3ª neurona:</b> tálamo (núcleos VPL/VPM) → corteza.</li></ul>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Mapa de las cinco vías ascendentes</h3><div class="toc-list" id="tocList2"></div></div>`
+},
+{
+  id:'esp_simp', kind:'chain', num:'06', title:'Espinorreticular · Aferencia visceral simpática (trayecto de alarma)', accent:C.simp, levels:['T1','T5','T6','T7','T8','T9','T10','T11','T12','L1'],
+  diagram:{type:'chain', nodes:[
+    {label:'Estímulo nociceptivo', sub:'daño / isquemia en órgano'},
+    {label:'Nervios esplácnicos', sub:'aferencia visceral nociceptiva'},
+    {label:'Cadena simpática', sub:'la aferencia pasa sin sinapsis'},
+    {label:'Ganglio raíz dorsal', sub:'1ª neurona'},
+    {label:'Médula espinal', sub:'entrada del impulso'},
+  ]},
+  content:`
+  <div class="callout" style="--acc:${C.simp}">Trayecto: <b>origen en el órgano → nervio esplácnico → cadena simpática (sin sinapsis) → ramo comunicante blanco → ganglio de la raíz dorsal (1ª neurona) → médula espinal.</b></div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card" style="--card-accent:${C.simp}"><h3>Fibras vervo/contexto</h3><p>Fibras simpáticas aferentes viscerales nociceptivas transportan la señal de alarma desde el órgano dañado hasta la cadena simpática paravertebral.</p></div>
+    <div class="card" style="--card-accent:${C.simp}"><h3>Ganglio de la raíz dorsal (GRD)</h3><p>Primera neurona sensitiva: soma pseudounipolar que recibe la aferencia visceral nociceptiva antes de ingresar a la médula.</p></div>
+  </div>`
+},
+{
+  id:'asta_post', kind:'custom', num:'07', title:'Integración en asta posterior y convergencia', accent:C.simp, levels:['T1','T5'],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Corte medular · láminas de Rexed</div>${cordSVG(['I','V','X'], C.simp, {})}</div>
+    <div class="info-col">
+      <div class="card"><h3>Integración general</h3><p>Las aferencias viscerales simpáticas sinaptan preferentemente en las <b>láminas I, V y X</b> de Rexed.</p></div>
+      <div class="card"><h3>Mecanismo del dolor referido</h3><p>La <b>convergencia</b> de fibras viscerales y somáticas sobre la misma neurona de 2° orden (lámina V) es el sustrato anatómico del dolor referido.</p></div>
+      <div class="card"><h3>Proyecciones</h3><p>Transmisión de la señal de alarma hacia el sistema límbico (sufrimiento), tálamo, hipotálamo (respuesta autonómica) y SARA (alerta cortical).</p></div>
+      <div class="legend-row">
+        <span><i style="background:${C.simp}"></i>Lámina I (marginal)</span>
+        <span><i style="background:${C.simp}"></i>Lámina V (convergencia)</span>
+        <span><i style="background:${C.simp}"></i>Lámina X (comisural)</span>
+      </div>
+    </div>
+  </div>`
+},
+{
+  id:'isquemia_cadena', kind:'custom', num:'08', title:'Vías somáticas viscerales: aferencia de isquemia (cadena de 4 pasos)', accent:C.neo, levels:['T1','T5','L2'],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Corte medular · decusación anterolateral</div>${cordSVG(['I','V'], C.neo, {anterolateral:true})}</div>
+    <div class="info-col">
+      <div class="card"><h3>1. Origen y entrada</h3><p>Estímulo: la isquemia libera H⁺, lactato y bradicinina. Primera neurona con soma en el ganglio de la raíz dorsal (DRG). Fibras Aδ (rápidas, dolor punzante) y C (lentas, dolor sordo).</p></div>
+      <div class="card"><h3>2. Sinapsis y cruce medular</h3><p>Sinapsis en el asta dorsal (láminas I y V). Decusación (cruce) por la comisura blanca anterior hacia el lado opuesto, ascendiendo por el tracto de Lissauer (1–2 niveles).</p></div>
+      <div class="card"><h3>3. Ascenso anterolateral</h3><p>Asciende de forma contralateral y limpia por el cordón anterolateral: tracto espinotalámico (dolor visceral puro) y tracto espinorreticular (emoción y alerta).</p></div>
+      <div class="card"><h3>4. Procesamiento tálamo-cortical</h3><p>Relevo en tálamo (VPL, 3ª neurona) con proyección a la corteza somatosensorial S1 (percepción consciente, referida y difusa) y a la ínsula/cíngulo (componente afectivo y autonómico).</p></div>
+    </div>
+  </div>`
+},
+{
+  id:'esp_multinivel', kind:'chain', num:'09', title:'Vías aferentes espinorreticulares (integración multinivel)', accent:C.simp, levels:['T5','T7'],
+  diagram:{type:'chain', nodes:[
+    {label:'Órgano visceral', sub:'nociceptores/mecanorreceptores'},
+    {label:'Ganglio raíz dorsal', sub:'fibras C y Aδ · 1ª neurona'},
+    {label:'Médula espinal', sub:'sinapsis en asta dorsal · decusación parcial/multinivel'},
+    {label:'Tronco encefálico', sub:'formación reticular + SARA'},
+    {label:'Tálamo / hipotálamo', sub:'núcleos intralaminares y de línea media (bilateral)'},
+    {label:'Corteza cíngulo / ínsula', sub:'percepción emocional del dolor'},
+  ]},
+  content:`
+  <div class="callout" style="--acc:${C.simp}">A diferencia de la vía neoespinotalámica, esta vía es <b>multisináptica</b>, con decusación parcial y proyección bilateral difusa: no localiza el dolor, pero genera arousal y respuesta autonómica.</div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card" style="--card-accent:${C.simp}"><h3>Núcleos intralaminares y de línea media</h3><p>Relevo talámico "inespecífico": no discrimina localización, pero conecta con núcleos hipotalámicos de control autonómico.</p></div>
+    <div class="card" style="--card-accent:${C.simp}"><h3>Sistema activador reticular ascendente (SARA)</h3><p>Genera el estado de alerta (arousal) asociado al dolor visceral difuso.</p></div>
+  </div>`
+},
+{
+  id:'sintesis_esp', kind:'custom', num:'10', title:'Síntesis de la vía espinorreticular: dolor difuso y alerta', accent:C.simp, levels:[],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Cuatro módulos funcionales · toca cada uno</div>${modulesSVG([
+      {t:'Origen y receptor', s:'fibra C · epidermis/víscera', detail:'Receptores C: dolor sordo, visceral, protopático. Estímulos activadores: isquemia e inflamación.'},
+      {t:'Entrada y sinapsis medular', s:'láminas VII–VIII de Rexed', detail:'Entrada multinivel en la médula, con sinapsis difusa en láminas VII y VIII (no en la lámina I típica del dolor localizado).'},
+      {t:'Ascenso multinivel', s:'contralateral y bilateral', detail:'Trayecto polisináptico ascendente, contralateral y bilateral — sin somatotopía fina, a diferencia del tracto neoespinotalámico.'},
+      {t:'Destino central y percepción', s:'formación reticular / hipotálamo / cíngulo', detail:'Relevo en formación reticular e hipotálamo; percepción afectiva, emocional y aversiva; genera alerta (arousal) vía SARA.'},
+    ], C.simp)}</div>
+    <div class="info-col">
+      <div class="card"><h3>Receptores C</h3><p>Dolor sordo, visceral, protopático. Estímulos: isquemia, inflamación.</p></div>
+      <div class="card"><h3>Entrada multinivel</h3><p>Trayecto polisináptico difuso, sin somatotopía fina.</p></div>
+      <div class="card"><h3>Percepción afectiva y alerta</h3><p>Relevo en formación reticular e hipotálamo; percepción afectiva, emocional, aversiva; produce alerta (arousal).</p></div>
+      <div class="callout" style="--acc:${C.simp}"><b>Perla:</b> "La vía espinorreticular modula el sufrimiento emocional del dolor difuso y la activación de alerta."</div>
+    </div>
+  </div>`
+},
+{
+  id:'neoespino', kind:'chain', num:'11', title:'Sistema neoespinotalámico', accent:C.neo, levels:['T5','T6','T7','T8','T9','T10','T11','T12','L1','L2'],
+  diagram:{type:'cord', highlight:['I','V'], opts:{anterolateral:true}},
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.neo}"><h3>1ª neurona (origen)</h3><p>Se ubica en los ganglios de la raíz dorsal (T5–L2). Sus prolongaciones periféricas recogen la señal desde las serosas mediante fibras rápidas Aδ.</p></div>
+    <div class="card" style="--card-accent:${C.neo}"><h3>2ª neurona (médula espinal)</h3><p>En el asta dorsal (láminas I y V de Rexed). Decusación inmediata por la comisura blanca anterior, ascendiendo limpio y directo por el cordón anterolateral.</p></div>
+    <div class="card" style="--card-accent:${C.neo}"><h3>3ª neurona (destino central)</h3><p>Tálamo, núcleo ventral posterolateral (VPL). Las proyecciones talámicas se dirigen a la corteza somatosensorial primaria (S1).</p></div>
+    <div class="card" style="--card-accent:${C.neo}"><h3>¿Qué transmite?</h3><p>Estímulos mecánicos y químicos de alta intensidad que indican daño tisular agudo o inminente. Dolor agudo, localizado y punzante.</p></div>
+  </div>
+  <div class="callout" style="margin-top:16px;--acc:${C.neo}">"¿Dónde me duele?" — aporta la capacidad discriminativa necesaria para que el clínico localice patologías urgentes (ej. abdomen quirúrgico agudo).</div>`
+},
+{
+  id:'nts', kind:'chain', num:'12', title:'Vía: núcleo del tracto solitario (NTS)', accent:C.para, levels:[],
+  diagram:{type:'chain', nodes:[
+    {label:'Glomo carotídeo / arco aórtico', sub:'baro y quimiorreceptores'},
+    {label:'Nervios craneales IX y X', sub:'glosofaríngeo y vago · 1ª neurona (ganglios inferiores)'},
+    {label:'Núcleo del tracto solitario', sub:'bulbo raquídeo · 2ª neurona / relevo central'},
+    {label:'Arcos reflejos autónomos', sub:'núcleo motor dorsal del vago'},
+  ]},
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.para}"><h3>¿Qué transmite?</h3><p>Aferencias viscerales fisiológicas e inconscientes: estado mecánico y químico del cuerpo en tiempo real (presión arterial, oxígeno, distensión digestiva).</p></div>
+    <div class="card" style="--card-accent:${C.para}"><h3>Origen y receptores</h3><p>Glomo carotídeo y arco aórtico (receptores de estiramiento y químicos).</p></div>
+    <div class="card" style="--card-accent:${C.para}"><h3>Conductores (1ª neurona)</h3><p>Nervios craneales vago (X) y glosofaríngeo (IX); somas en sus ganglios inferiores.</p></div>
+    <div class="card" style="--card-accent:${C.para}"><h3>Centro de relevo (2ª neurona)</h3><p>Núcleo del tracto solitario (NTS), en el bulbo raquídeo — gran procesador central de la homeostasis.</p></div>
+  </div>
+  <div class="card" style="margin-top:16px;--card-accent:${C.para}"><h3>Efecto clínico inmediato</h3><p>Activa arcos reflejos autónomos (ej. ordena al núcleo motor dorsal del vago disminuir la frecuencia cardíaca o modular la respiración).</p></div>
+  <div class="callout" style="margin-top:16px;--acc:${C.para}"><b>Correlación clínica esencial — síncope vasovagal:</b> una hiperactivación aferente llega al NTS, que responde exageradamente estimulando al sistema parasimpático. Resultado: bradicardia severa y vasodilatación generalizada que bajan la presión arterial, privando momentáneamente de flujo al cerebro y provocando pérdida de conciencia.</div>`
+},
+{
+  id:'espinoparabraquial', kind:'chain', num:'13', title:'Vía espinoparabraquial', accent:C.pbr, levels:[],
+  diagram:{type:'chain', nodes:[
+    {label:'"Estado de fondo"', sub:'quimiorreceptor H⁺/pH/hipoxia · mecanorreceptor (saciedad)'},
+    {label:'Glosofaríngeo (IX) y vago (X)', sub:'1ª neurona'},
+    {label:'Núcleo del tracto solitario', sub:'sinapsis y relevo'},
+    {label:'Tálamo (VPL)', sub:'eferencia hacia tálamo'},
+    {label:'Amígdala e ínsula', sub:'experiencia afectiva'},
+  ]},
+  content:`
+  <div class="grid2">
+    <div class="card" style="--card-accent:${C.pbr}"><h3>Homeostasis, interocepción y afecto</h3><p>Permite que el cerebro evalúe el "estado de fondo" del organismo (pH, hipoxia, saciedad, plenitud gástrica).</p></div>
+    <div class="card" style="--card-accent:${C.pbr}"><h3>¿Por qué es clínicamente relevante?</h3><p>Al conectar con la amígdala y la ínsula, traduce el estado metabólico en una experiencia afectiva (ansiedad por falta de aire, malestar general) — es la base neurobiológica del paciente sintomático.</p></div>
+  </div>
+  <div class="callout" style="margin-top:16px;--acc:${C.pbr}">Clave para entender la relación médico-paciente y los <b>trastornos psicosomáticos</b>.</div>`
+},
+{
+  id:'columna_dorsal', kind:'custom', num:'14', title:'Columna dorsal postsináptica', accent:C.dorsal, levels:['S1','S2','S3'],
+  content:`
+  <div class="split">
+    <div class="diagram-card"><div class="cap">Atajo somático · cordones posteriores</div>${cordSVG(['X'], C.dorsal, {dorsalTract:true})}</div>
+    <div class="info-col">
+      <div class="card"><h3>Entrada aferente pélvica</h3><p>Prolongaciones periféricas recogen dolor de órganos pélvicos (colon distal, vejiga, cérvix) que anatómicamente utilizan los cordones posteriores (fibras PSDCP, niveles S1–S3, fascículo grácil).</p></div>
+      <div class="card"><h3>Sinapsis en bulbo</h3><p>Las fibras pélvicas terminan en el <b>núcleo grácil</b> (bulbo raquídeo), centro de relevo pélvico.</p></div>
+      <div class="card"><h3>Aplicación neuroquirúrgica</h3><p>Una <b>mielotomía puntual</b> en la línea media del bulbo o médula alta puede interrumpir el ascenso del dolor oncológico pélvico intratable — control quirúrgico milimétrico y muy selectivo.</p></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><h3>Subsección · Aferencia simpática: integración general y dolor referido</h3>
+  <div class="split" style="margin-top:10px">
+    <div class="diagram-card" style="position:static"><div class="cap">Dermatomas e isquemia cardíaca referida</div>${dermatomeSVG()}
+      <button class="play-btn" id="dermaPlayBtn">▶ Simular dolor referido</button>
+      <div class="race-readout" id="dermaReadout">Toca los dermatomas o presiona play para ver la convergencia.</div>
+    </div>
+    <div class="info-col">
+      <div class="card"><h3>Trayecto</h3><p>Órgano → nervios esplácnicos → cadena simpática → ramo comunicante blanco → ganglio de la raíz dorsal (1ª neurona).</p></div>
+      <div class="card"><h3>Mecanismo de convergencia</h3><p>La lámina V recibe información tanto visceral como somática (piel). Es el origen anatómico del dolor referido.</p></div>
+      <div class="card"><h3>Ejemplo clínico</h3><p>Las fibras que transmiten la isquemia cardíaca entran a la médula por los niveles T1 a T5. En la lámina V convergen con las neuronas somáticas del pecho y del brazo izquierdo. El cerebro, por habituación, proyecta el dolor hacia el brazo, asumiendo erróneamente que el estímulo viene de la piel.</p></div>
+    </div>
+  </div></div>`
+},
+{ id:'resumen', kind:'summary', num:'15', title:'Resumen comparativo de las vías', accent:C.mix, levels:[] },
+{ id:'comparacion', kind:'compare', num:'16', title:'Comparación interactiva de vías', accent:C.mix, levels:[] },
+{ id:'conclusiones', kind:'conclusion', num:'17', title:'Conclusiones', accent:C.mix, levels:[] },
+{ id:'juego', kind:'quiz', num:'18', title:'Juego de repaso', accent:C.simp, levels:[] },
+];
+
+function fibersSVGmini(){
+  return `<svg viewBox="0 0 260 160" class="schem-svg" xmlns="http://www.w3.org/2000/svg">
+    <rect x="20" y="20" width="220" height="60" rx="10" fill="#171a21" stroke="#3a4150"/>
+    <g class="hot" tabindex="0" data-t="Distensión" data-d="Estímulo mecánico en vísceras huecas o cápsulas orgánicas (ej. distensión intestinal, cápsula hepática/renal)." data-c="${C.somatic}">
+      <circle cx="60" cy="50" r="9" fill="${C.somatic}22" stroke="${C.somatic}" stroke-width="1.5"/>
+      <text x="60" y="54" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.somatic}">↔</text>
+      <text x="60" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.somatic}">distensión</text>
+    </g>
+    <g class="hot" tabindex="0" data-t="Isquemia" data-d="Acumulación de metabolitos ácidos (H⁺, lactato, bradicinina) por falta de oxigenación tisular." data-c="${C.neo}">
+      <circle cx="130" cy="50" r="9" fill="${C.neo}22" stroke="${C.neo}" stroke-width="1.5"/>
+      <text x="130" y="54" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.neo}">🔥</text>
+      <text x="130" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.neo}">isquemia</text>
+    </g>
+    <g class="hot" tabindex="0" data-t="Inflamación" data-d="Sensibilización química de nociceptores por mediadores locales (prostaglandinas, citoquinas, bradicinina)." data-c="${C.simp}">
+      <circle cx="200" cy="50" r="9" fill="${C.simp}22" stroke="${C.simp}" stroke-width="1.5"/>
+      <text x="200" y="54" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.simp}">⚡</text>
+      <text x="200" y="95" text-anchor="middle" font-family="IBM Plex Mono" font-size="8" fill="${C.simp}">inflamación</text>
+    </g>
+    <text x="130" y="130" text-anchor="middle" font-family="IBM Plex Mono" font-size="8.5" fill="#565d6c">RECEPTOR VISCERAL (nociceptor) · toca cada estímulo</text>
+  </svg>`;
+}
+
+/* summary table data (shared with sensib section) */
+const SUMMARY = [
+  {sens:'Dolor sordo', accent:C.simp, via:'Paleoespinotalámico / espinorreticular', decus:'Multinivel / bilateral', clin:'Isquemia (IAM). Activa el sistema de alarma (SARA) y respuestas vegetativas.'},
+  {sens:'Dolor agudo', accent:C.neo, via:'Neoespinotalámico (láminas I y V)', decus:'Médula espinal (nivel de entrada)', clin:'Abdomen quirúrgico. Localización precisa por irritación de peritoneo/pleura.'},
+  {sens:'Reflejos autónomos', accent:C.para, via:'Núcleo del tracto solitario (NTS)', decus:'Ipsilateral', clin:'Homeostasis refleja. Control de baro y quimiorreceptores.'},
+  {sens:'Interocepción', accent:C.pbr, via:'Espinoparabraquial (ínsula)', decus:'Principalmente ipsilateral', clin:'Evaluación del "estado de fondo" (pH, O₂). Traduce metabolismo en afecto.'},
+  {sens:'Dolor pélvico', accent:C.dorsal, via:'Columna dorsal postsináptica', decus:'Bulbo (núcleo grácil)', clin:'Atajo somático. Diana quirúrgica para el alivio del dolor oncológico.'},
+  {sens:'Dolor referido', accent:C.somatic, via:'Aferencia simpática (lámina V)', decus:'Segmentaria', clin:'Convergencia víscero-somática. Explica el dolor en brazo u hombro.'},
+];
+
+/* quiz bank */
+const QUIZ = [
+  {q:'¿Qué lámina de Rexed es la responsable anatómica del dolor referido por convergencia víscero-somática?', opts:['Lámina I','Lámina V','Lámina VIII','Lámina X'], a:1, exp:'La lámina V recibe fibras viscerales y somáticas sobre la misma neurona de 2° orden: es la base del dolor referido.'},
+  {q:'¿Qué tipo de fibra transmite el dolor visceral crónico, difuso y "sordo"?', opts:['Fibras Aβ','Fibras Aδ','Fibras C','Fibras Aα'], a:2, exp:'Las fibras C son amielínicas, de conducción lenta y transmiten el dolor visceral sordo, crónico y afectivo.'},
+  {q:'¿Dónde hace su 3ª sinapsis (relevo talámico) la vía neoespinotalámica?', opts:['Núcleo del tracto solitario','Núcleo grácil','Núcleo ventral posterolateral (VPL)','Núcleos intralaminares'], a:2, exp:'La 3ª neurona del sistema neoespinotalámico está en el tálamo, núcleo VPL, con proyección a la corteza S1.'},
+  {q:'¿Qué estructura integra los reflejos autonómicos (barorreceptor, quimiorreceptor) provenientes del vago y glosofaríngeo?', opts:['Núcleo grácil','Formación reticular mesencefálica','Núcleo del tracto solitario (NTS)','Cíngulo anterior'], a:2, exp:'El NTS, en el bulbo raquídeo, es el centro de relevo de las aferencias viscerales fisiológicas del IX y X par.'},
+  {q:'¿Qué mecanismo fisiopatológico explica el síncope vasovagal?', opts:['Hipoactivación simpática aislada','Hiperactivación aferente al NTS con respuesta parasimpática exagerada','Lesión directa del núcleo grácil','Bloqueo del tracto espinotalámico'], a:1, exp:'La hiperactivación aferente llega al NTS, que estimula en exceso al parasimpático, generando bradicardia y vasodilatación → hipoperfusión cerebral → síncope.'},
+  {q:'¿Qué vía utiliza como "atajo" los cordones posteriores para transmitir dolor pélvico visceral?', opts:['Espinorreticular','Columna dorsal postsináptica','Espinoparabraquial','Neoespinotalámico'], a:1, exp:'La vía de la columna dorsal postsináptica (PSDCP) conduce la sensibilidad pélvica hacia el núcleo grácil bulbar.'},
+  {q:'¿Cuál es el destino cortical característico de la vía visceral en general?', opts:['Corteza motora primaria','Corteza insular','Corteza occipital','Cerebelo'], a:1, exp:'La ínsula (corteza insular) es el destino cortical principal de la información visceral consciente.'},
+  {q:'¿Qué procedimiento neuroquirúrgico puede extinguir el dolor oncológico pélvico intratable?', opts:['Talamotomía bilateral','Mielotomía puntual en la línea media','Vagotomía selectiva','Simpatectomía lumbar'], a:1, exp:'Una mielotomía puntual milimétrica en la línea media (bulbo o médula alta) interrumpe el "atajo" de la columna dorsal postsináptica.'},
+  {q:'¿Qué estímulo NO es un mecanismo clásico de activación de nociceptores viscerales?', opts:['Distensión','Isquemia','Inflamación','Presión atmosférica'], a:3, exp:'Los tres mecanismos clásicos son distensión, isquemia e inflamación; la presión atmosférica no es un estímulo nociceptivo visceral relevante.'},
+  {q:'¿Qué estructura conecta el "estado de fondo" metabólico con la amígdala y la ínsula, generando afecto?', opts:['Vía espinoparabraquial','Vía neoespinotalámica','Fascículo grácil','Tracto corticoespinal'], a:0, exp:'La vía espinoparabraquial traduce el estado metabólico (pH, hipoxia) en una experiencia afectiva vía amígdala/ínsula.'},
+  {q:'¿Por qué el paciente que señala el dolor con un solo dedo probablemente activa la vía neoespinotalámica?', opts:['Porque es un dolor difuso y multinivel','Porque la vía neoespinotalámica tiene alta precisión somatotópica (fibras Aδ, decusación limpia)','Porque es un reflejo autonómico','Porque involucra al núcleo grácil'], a:1, exp:'La vía neoespinotalámica asciende de forma limpia y directa por el cordón anterolateral, con alta precisión somatotópica hacia S1.'},
+  {q:'Las fibras aferentes viscerales simpáticas nociceptivas ingresan a la médula principalmente a través de:', opts:['Nervios craneales IX y X','Nervios esplácnicos y ramo comunicante blanco','Fascículo grácil','Nervio pélvico exclusivamente'], a:1, exp:'La vía de alarma simpática viaja por los nervios esplácnicos, la cadena simpática (sin sinapsis) y el ramo comunicante blanco hacia el ganglio de la raíz dorsal.'},
+];
+
+/* =========================================================================
+   RENDERING
+   ========================================================================= */
+let current = 0;
+
+function buildRail(){
+  const rail = document.getElementById('rail');
+  rail.innerHTML = `<div class="rail-title">Niveles segmentarios</div>` + LEVELS.map(l=>{
+    const gap = (l==='C1'||l==='T1'||l==='L1'||l==='S1') ? '<div class="rail-group-gap"></div>' : '';
+    return `${gap}<div class="rail-seg" data-lvl="${l}">${l}</div>`;
+  }).join('');
+}
+
+function updateRail(section){
+  const accent = section.accent || C.mix;
+  document.querySelectorAll('.rail-seg').forEach(el=>{
+    const lvl = el.dataset.lvl;
+    const active = (section.levels||[]).includes(lvl);
+    el.classList.toggle('on', active);
+    el.style.setProperty('--seg-color', accent);
+  });
+}
+
+function buildNav(){
+  const nav = document.getElementById('navlist');
+  const groups = [
+    {label:'Fundamentos', ids:['intro','clasif','mecanismos','fibras','sensib']},
+    {label:'Vías ascendentes', ids:['viaaferente','esp_simp','asta_post','isquemia_cadena','esp_multinivel','sintesis_esp','neoespino','nts','espinoparabraquial','columna_dorsal']},
+    {label:'Cierre', ids:['resumen','comparacion','conclusiones','juego']},
+  ];
+  let html = '';
+  groups.forEach(g=>{
+    html += `<div class="navgroup-label">${g.label}</div>`;
+    g.ids.forEach(id=>{
+      const s = SECTIONS.find(x=>x.id===id);
+      const idx = SECTIONS.indexOf(s);
+      html += `<div class="navitem" data-idx="${idx}" style="--dot:${s.accent}"><span class="num">${s.num}</span><span class="dot"></span><span>${s.title.split('·')[0].split(':')[0].trim()}</span></div>`;
+    });
+  });
+  nav.innerHTML = html;
+  nav.querySelectorAll('.navitem').forEach(el=>{
+    el.addEventListener('click', ()=> goTo(parseInt(el.dataset.idx)));
+  });
+
+  const mobileSelect = document.getElementById('mobileSelect');
+  mobileSelect.innerHTML = SECTIONS.map((s,i)=>`<option value="${i}">${s.num} · ${s.title}</option>`).join('');
+  mobileSelect.addEventListener('change', e=> goTo(parseInt(e.target.value)));
+}
+
+function renderDiagram(section){
+  if(!section.diagram) return '';
+  const d = section.diagram;
+  let inner = '', toolbar='', hint='<div class="hint-line">Toca cualquier estructura para ver su detalle.</div>';
+  if(d.type === 'chain') inner = chainSVG(d.nodes, section.accent);
+  else if(d.type === 'cord') inner = cordSVG(d.highlight, section.accent, d.opts||{});
+  else if(d.type === 'bodypaths'){
+    inner = bodyPathsSVG();
+    toolbar = `<div class="diagram-toolbar" id="bodyToolbar" style="--tb-c:${section.accent}">
+      <button class="toggle-btn active" data-layer="all">Ambos</button>
+      <button class="toggle-btn" data-layer="simp" style="--tb-c:${C.simp}">Simpático</button>
+      <button class="toggle-btn" data-layer="para" style="--tb-c:${C.para}">Parasimpático</button>
+    </div>`;
+  }
+  return `<div class="diagram-card">${toolbar}<div class="cap">Modelo 2D esquemático · estructuras rotuladas</div>${inner}${hint}</div>`;
+}
+
+function renderSummaryBody(){
+  return SUMMARY.map(r=>`<tr>
+    <td><span class="rowdot" style="background:${r.accent}"></span><b>${r.sens}</b></td>
+    <td>${r.via}</td><td>${r.decus}</td><td>${r.clin}</td>
+  </tr>`).join('');
+}
+
+function renderMain(){
+  const section = SECTIONS[current];
+  const main = document.getElementById('main');
+  let body = '';
+
+  if(section.kind === 'intro'){
+    body = section.content;
+  } else if(section.kind === 'chain'){
+    body = `<div class="split">${renderDiagram(section)}<div class="info-col">${section.content}</div></div>`;
+  } else if(section.kind === 'custom'){
+    body = section.content;
+  } else if(section.kind === 'summary'){
+    body = `<div class="card"><h3>Tabla maestra</h3>
+      <table class="datatable"><thead><tr><th>Sensibilidad</th><th>Vía / tracto</th><th>Decusación</th><th>Importancia clínica</th></tr></thead>
+      <tbody>${renderSummaryBody()}</tbody></table></div>
+      <div class="pillrow" style="margin-top:16px">
+        ${SUMMARY.map(r=>`<span class="pill" style="border-color:${r.accent}44;color:${r.accent}">${r.sens}</span>`).join('')}
+      </div>`;
+  } else if(section.kind === 'compare'){
+    body = renderCompareUI();
+  } else if(section.kind === 'conclusion'){
+    body = `
+    <div class="grid2">
+      <div class="card" style="--card-accent:${C.neo}"><h3>Dualidad clínica (vías 1 y 2)</h3><p>La isquemia visceral activa la vía <b>paleoespinotalámica</b> (dolor sordo, difuso, náuseas), mientras que la inflamación de la serosa activa la vía <b>neoespinotalámica</b> (dolor agudo, localizado, de resolución quirúrgica).</p></div>
+      <div class="card" style="--card-accent:${C.somatic}"><h3>Dolor referido</h3><p>No es un error, sino una <b>consecuencia anatómica</b> de la convergencia en la lámina V de Rexed, donde el cerebro confunde la señal del órgano con la del dermatoma somático.</p></div>
+      <div class="card" style="--card-accent:${C.pbr}"><h3>Homeostasis e interocepción</h3><p>El NTS y la vía espinoparabraquial evalúan constantemente el "estado de fondo" del cuerpo (pH, O₂), traduciendo el estado metabólico en respuestas reflejas y experiencias afectivas.</p></div>
+      <div class="card" style="--card-accent:${C.dorsal}"><h3>Aplicación neuroquirúrgica</h3><p>El "atajo" anatómico del dolor pélvico por la columna dorsal postsináptica permite extinguir el dolor oncológico intratable mediante una mielotomía puntual milimétrica.</p></div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>Elementos clave — para llevar a casa</h3>
+      <ul>
+        <li><b>El dedo vs. la mano:</b> un dedo señalando = vía neoespinotalámica (localizado); la palma completa = vía paleoespinotalámica (difuso).</li>
+        <li><b>El culpable del dolor referido:</b> las fibras del órgano y las de la piel hacen sinapsis en el mismo cable — la lámina V de Rexed.</li>
+        <li><b>El "atajo" pélvico:</b> el dolor oncológico pélvico baja por un camino somático exclusivo (cordones posteriores); una mielotomía puntual lo extingue por completo.</li>
+        <li><b>Las vísceras "tienen sentimientos":</b> la vía espinoparabraquial conecta el estado metabólico con la amígdala y la ínsula, transformando una falla orgánica en angustia o malestar general.</li>
+      </ul>
+    </div>`;
+  } else if(section.kind === 'quiz'){
+    body = `<div class="quiz-box" id="quizBox"></div>`;
+  }
+
+  main.innerHTML = `
+    <div class="crumb">Vías sensitivas viscerales · sección ${section.num}</div>
+    <div class="headline"><h2 class="title">${section.title.split(' · ')[0]}</h2><span class="tag" style="--tagcolor:${section.accent}">${section.id}</span></div>
+    ${section.title.includes('·') ? `<p class="lead">${section.title.split('·').slice(1).join('·').trim()}</p>` : ''}
+    <div id="bodySlot">${body}</div>
+    <div class="footnav">
+      <button class="navbtn" id="prevBtn" ${current===0?'disabled':''}><span>←</span><span><span class="small">Anterior</span>${current>0?SECTIONS[current-1].title.split('·')[0]:''}</span></button>
+      <button class="navbtn" id="nextBtn" ${current===SECTIONS.length-1?'disabled':''}><span><span class="small">Siguiente</span>${current<SECTIONS.length-1?SECTIONS[current+1].title.split('·')[0]:''}</span><span>→</span></button>
+    </div>
+  `;
+
+  document.getElementById('prevBtn').addEventListener('click', ()=> goTo(current-1));
+  document.getElementById('nextBtn').addEventListener('click', ()=> goTo(current+1));
+
+  // fill TOC lists if present
+  const tocEl = document.getElementById('tocList');
+  if(tocEl){
+    const items = [
+      ['01','Clasificación SNA (simpático / parasimpático)', C.simp],
+      ['06–10','Vía espinorreticular (dolor difuso + alerta)', C.simp],
+      ['11','Sistema neoespinotalámico (dolor agudo localizado)', C.neo],
+      ['12','Núcleo del tracto solitario (reflejos autonómicos)', C.para],
+      ['13','Vía espinoparabraquial (interocepción/afecto)', C.pbr],
+      ['14','Columna dorsal postsináptica (dolor pélvico)', C.dorsal],
+    ];
+    tocEl.innerHTML = items.map(([n,t,c])=>`<div class="toc-item"><span class="n">${n}</span><span class="dot" style="background:${c};width:7px;height:7px;border-radius:50%;flex-shrink:0"></span><span>${t}</span></div>`).join('');
+  }
+  const tocEl2 = document.getElementById('tocList2');
+  if(tocEl2){
+    tocEl2.innerHTML = `
+      <div class="toc-item" data-goto="esp_simp"><span class="n">06</span><span class="dot" style="background:${C.simp};width:7px;height:7px;border-radius:50%"></span><span>Espinorreticular — alarma, dolor difuso</span></div>
+      <div class="toc-item" data-goto="neoespino"><span class="n">11</span><span class="dot" style="background:${C.neo};width:7px;height:7px;border-radius:50%"></span><span>Neoespinotalámico — dolor agudo localizado</span></div>
+      <div class="toc-item" data-goto="nts"><span class="n">12</span><span class="dot" style="background:${C.para};width:7px;height:7px;border-radius:50%"></span><span>Núcleo del tracto solitario — reflejos</span></div>
+      <div class="toc-item" data-goto="espinoparabraquial"><span class="n">13</span><span class="dot" style="background:${C.pbr};width:7px;height:7px;border-radius:50%"></span><span>Espinoparabraquial — interocepción</span></div>
+      <div class="toc-item" data-goto="columna_dorsal"><span class="n">14</span><span class="dot" style="background:${C.dorsal};width:7px;height:7px;border-radius:50%"></span><span>Columna dorsal postsináptica — dolor pélvico</span></div>`;
+    tocEl2.querySelectorAll('.toc-item').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const idx = SECTIONS.findIndex(s=>s.id===el.dataset.goto);
+        goTo(idx);
+      });
+    });
+  }
+  const sensTable = document.getElementById('sensTable');
+  if(sensTable) sensTable.innerHTML = renderSummaryBody();
+
+  if(section.kind === 'compare') initCompare();
+  if(section.kind === 'quiz') initQuiz();
+  if(section.id === 'fibras') initFiberRace();
+  if(section.id === 'clasif') initBodyPaths();
+  if(section.id === 'columna_dorsal') initDermatome();
+
+  updateRail(section);
+  updateNavActive();
+  document.getElementById('main').scrollIntoView({block:'start'});
+  document.getElementById('mobileSelect').value = current;
+}
+
+function updateNavActive(){
+  document.querySelectorAll('.navitem').forEach(el=>{
+    el.classList.toggle('active', parseInt(el.dataset.idx)===current);
+  });
+}
+
+function goTo(idx){
+  if(idx<0 || idx>=SECTIONS.length) return;
+  current = idx;
+  renderMain();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ---------- compare tool ---------- */
+const PATHS = [
+  {id:'neo', label:'Neoespinotalámico', accent:C.neo, fibra:'Aδ (rápida)', neuronas:'3 (DRG → láminas I/V → VPL)', decus:'Inmediata, comisura blanca anterior', destino:'Corteza S1 (vía tálamo VPL)', dolor:'Agudo, localizado, punzante', clinica:'Abdomen quirúrgico agudo'},
+  {id:'reticular', label:'Espinorreticular', accent:C.simp, fibra:'C (lenta)', neuronas:'Multisináptica (láminas VII–VIII)', decus:'Parcial / multinivel', destino:'Formación reticular, tálamo intralaminar, cíngulo/ínsula', dolor:'Difuso, sordo, afectivo', clinica:'Isquemia (IAM), alarma y arousal'},
+  {id:'nts', label:'Núcleo del tracto solitario', accent:C.para, fibra:'Aferentes viscerales IX/X', neuronas:'2 (ganglios inferiores IX/X → NTS)', decus:'Ipsilateral', destino:'Núcleo motor dorsal del vago (reflejo)', dolor:'No doloroso (fisiológico)', clinica:'Barorreflejo, síncope vasovagal'},
+  {id:'pbr', label:'Espinoparabraquial', accent:C.pbr, fibra:'Aferentes viscerales IX/X', neuronas:'NTS → tálamo VPL → amígdala/ínsula', decus:'Principalmente ipsilateral', destino:'Amígdala e ínsula', dolor:'No doloroso; genera afecto', clinica:'Trastornos psicosomáticos'},
+  {id:'dorsal', label:'Columna dorsal postsináptica', accent:C.dorsal, fibra:'PSDCP (pélvicas)', neuronas:'DRG (S1–S3) → núcleo grácil', decus:'Bulbo (núcleo grácil)', destino:'Núcleo grácil → tálamo', dolor:'Visceral pélvico', clinica:'Mielotomía puntual — dolor oncológico'},
+];
+
+function renderCompareUI(){
+  return `
+  <div class="compare-select">
+    <select id="cmpA"></select>
+    <select id="cmpB"></select>
+  </div>
+  <div class="compare-grid" id="cmpGrid"></div>
+  <div class="card" style="margin-top:20px"><h3>¿Por qué comparar?</h3><p>Diferenciar propiedades funcionales y estructurales de cada vía visceral —frente a la vía somática— permite reconocer, frente a un paciente, si el dolor es agudo/localizado (neoespinotalámico), difuso/afectivo (espinorreticular), reflejo (NTS), interoceptivo (espinoparabraquial) o pélvico quirúrgico (columna dorsal postsináptica).</p></div>
+  `;
+}
+
+function initCompare(){
+  const a = document.getElementById('cmpA'), b = document.getElementById('cmpB');
+  a.innerHTML = PATHS.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  b.innerHTML = PATHS.map(p=>`<option value="${p.id}">${p.label}</option>`).join('');
+  a.value = 'neo'; b.value = 'reticular';
+  const draw = ()=>{
+    const pa = PATHS.find(p=>p.id===a.value), pb = PATHS.find(p=>p.id===b.value);
+    document.getElementById('cmpGrid').innerHTML = [pa,pb].map(p=>`
+      <div class="compare-card" style="--c-accent:${p.accent}">
+        <h4>${p.label}</h4>
+        <div class="compare-row"><div class="k">Fibra</div><div class="v">${p.fibra}</div></div>
+        <div class="compare-row"><div class="k">Neuronas</div><div class="v">${p.neuronas}</div></div>
+        <div class="compare-row"><div class="k">Decusación</div><div class="v">${p.decus}</div></div>
+        <div class="compare-row"><div class="k">Destino</div><div class="v">${p.destino}</div></div>
+        <div class="compare-row"><div class="k">Tipo de dolor</div><div class="v">${p.dolor}</div></div>
+        <div class="compare-row"><div class="k">Clínica</div><div class="v">${p.clinica}</div></div>
+      </div>`).join('');
+  };
+  a.addEventListener('change', draw); b.addEventListener('change', draw);
+  draw();
+}
+
+/* ---------- quiz game ---------- */
+let quizOrder = [], quizIdx = 0, quizScore = 0;
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+
+function initQuiz(){
+  quizOrder = shuffle(QUIZ.map((_,i)=>i));
+  quizIdx = 0; quizScore = 0;
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion(){
+  const box = document.getElementById('quizBox');
+  if(quizIdx >= quizOrder.length){
+    const pct = Math.round((quizScore/quizOrder.length)*100);
+    box.innerHTML = `<div class="result-screen">
+      <div class="big" style="color:${pct>=70?C.para:C.simp}">${quizScore}/${quizOrder.length}</div>
+      <p style="color:var(--ink-dim);margin:10px 0 22px">${pct>=70? '¡Buen dominio de las vías viscerales!' : 'Repasa las secciones marcadas en rojo y vuelve a intentarlo.'}</p>
+      <button class="btn" id="restartQuiz">Reintentar</button>
+    </div>`;
+    document.getElementById('restartQuiz').addEventListener('click', initQuiz);
+    return;
+  }
+  const qi = quizOrder[quizIdx];
+  const q = QUIZ[qi];
+  box.innerHTML = `
+    <div class="quiz-progress">${quizOrder.map((_,i)=>`<i class="${i<quizIdx?'done':''}"></i>`).join('')}</div>
+    <div class="score-badge" style="margin-bottom:10px">Pregunta ${quizIdx+1} de ${quizOrder.length} · Puntaje: ${quizScore}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div id="quizOpts">${q.opts.map((o,i)=>`<button class="quiz-opt" data-i="${i}">${o}</button>`).join('')}</div>
+    <div id="quizExplainSlot"></div>
+    <div class="quiz-footer"><span></span><button class="btn" id="quizNext" style="display:none">Siguiente →</button></div>
+  `;
+  const opts = box.querySelectorAll('.quiz-opt');
+  opts.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      opts.forEach(b=>b.disabled=true);
+      const chosen = parseInt(btn.dataset.i);
+      if(chosen === q.a){ btn.classList.add('correct'); quizScore++; }
+      else{
+        btn.classList.add('wrong');
+        opts[q.a].classList.add('correct');
+      }
+      document.getElementById('quizExplainSlot').innerHTML = `<div class="quiz-explain">${q.exp}</div>`;
+      document.getElementById('quizNext').style.display = 'inline-block';
+    });
+  });
+  document.getElementById('quizNext').addEventListener('click', ()=>{ quizIdx++; renderQuizQuestion(); });
+}
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+buildRail();
+buildNav();
+renderMain();
+</script>
+</body>
+</html>

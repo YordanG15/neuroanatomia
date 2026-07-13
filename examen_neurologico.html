@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neuro-Explorador · Manual de Examen Neurológico</title>
+<style>
+  :root{
+    --navy:#152a52;
+    --navy-2:#1f3d73;
+    --ink:#1b2436;
+    --slate:#57678a;
+    --slate-soft:#8a97b5;
+    --bg:#f3f5fb;
+    --card:#ffffff;
+    --line:#dfe4f0;
+    --teal:#0f8a83;
+    --teal-soft:#e3f5f3;
+    --coral:#d1495b;
+    --coral-soft:#fbe7e9;
+    --amber:#c8871a;
+    --amber-soft:#fbf1de;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-mono:'JetBrains Mono', 'Courier New', monospace;
+  }
+  @font-face{
+    font-family:'Fraunces';
+    src:local('Georgia');
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 100% 0%, #1f3d7318 0%, transparent 45%),
+      var(--bg);
+    color:var(--ink);
+    font-family:var(--font-body);
+    min-height:100vh;
+    padding:0 0 60px 0;
+  }
+  ::selection{background:#c9dcff;}
+
+  /* ---------- HEADER ---------- */
+  header.top{
+    background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 100%);
+    color:#fff;
+    padding:34px 5vw 26px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::after{
+    content:"";
+    position:absolute; right:-60px; top:-60px;
+    width:220px; height:220px; border-radius:50%;
+    background:radial-gradient(circle,#ffffff14,transparent 70%);
+  }
+  .eyebrow{
+    font-family:var(--font-mono);
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    font-size:11.5px;
+    color:#9fb3e8;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#59d6c4;box-shadow:0 0 0 3px #59d6c422;}
+  h1.brand{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:clamp(28px,4vw,44px);
+    margin:6px 0 4px;
+    letter-spacing:-0.01em;
+  }
+  .brand-sub{color:#c3cdea;font-size:14.5px;max-width:640px;line-height:1.5;}
+
+  .score-pill{
+    position:absolute; top:34px; right:5vw;
+    background:#ffffff12;
+    border:1px solid #ffffff26;
+    border-radius:14px;
+    padding:10px 18px;
+    text-align:right;
+    backdrop-filter:blur(6px);
+    font-family:var(--font-mono);
+  }
+  .score-pill .n{font-size:22px;font-weight:700;color:#7ee0d1;}
+  .score-pill .l{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#a9b7de;}
+
+  /* ---------- NAV ---------- */
+  nav.chapters{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    padding:20px 5vw 0;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .ch-btn{
+    border:1px solid var(--line);
+    background:var(--card);
+    color:var(--slate);
+    padding:9px 15px;
+    border-radius:999px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    transition:all .15s ease;
+    white-space:nowrap;
+  }
+  .ch-btn .num{
+    font-family:var(--font-mono);
+    background:var(--bg);
+    color:var(--slate-soft);
+    border-radius:6px;
+    padding:1px 6px;
+    font-size:11px;
+  }
+  .ch-btn:hover{border-color:var(--navy-2); color:var(--navy);}
+  .ch-btn.active{background:var(--navy); color:#fff; border-color:var(--navy);}
+  .ch-btn.active .num{background:#ffffff22; color:#fff;}
+  .ch-btn.done::before{content:"✓ "; color:var(--teal); font-weight:800;}
+  .ch-btn.quiz-btn{background:var(--coral); color:#fff; border-color:var(--coral); margin-left:auto;}
+  .ch-btn.quiz-btn:hover{filter:brightness(1.06);}
+
+  main{max-width:1400px; margin:0 auto; padding:26px 5vw 0;}
+
+  /* ---------- CHAPTER VIEW ---------- */
+  .chapter-head{margin-bottom:18px;}
+  .chapter-head .kicker{font-family:var(--font-mono); font-size:11.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); font-weight:700;}
+  .chapter-head h2{font-family:var(--font-display); font-size:clamp(24px,3vw,32px); margin:4px 0 6px; color:var(--navy);}
+  .chapter-head p{color:var(--slate); font-size:14.5px; max-width:720px; line-height:1.55;}
+
+  .progress-track{height:6px; background:var(--line); border-radius:4px; overflow:hidden; max-width:320px; margin-top:10px;}
+  .progress-fill{height:100%; background:linear-gradient(90deg,var(--teal),#59d6c4); border-radius:4px; transition:width .4s ease;}
+
+  .split{
+    display:grid;
+    grid-template-columns:1.05fr 1fr;
+    gap:22px;
+    align-items:start;
+  }
+  @media (max-width:880px){ .split{grid-template-columns:1fr;} }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+  }
+  .panel-diagram{
+    position:sticky; top:16px;
+  }
+  .diagram-caption{
+    font-size:12px; color:var(--slate-soft); margin-top:10px; text-align:center;
+    font-style:italic;
+  }
+  svg.diagram{width:100%; height:auto; display:block;}
+
+  .hotspot circle{ fill:var(--navy-2); stroke:#fff; stroke-width:2.5; cursor:pointer; transition:all .18s ease; filter:drop-shadow(0 2px 3px rgba(21,42,82,.35)); }
+  .hotspot text{ fill:#fff; font-family:var(--font-mono); font-size:11px; font-weight:700; pointer-events:none; text-anchor:middle; dominant-baseline:central; }
+  .hotspot:hover circle{ fill:var(--teal); r:15; }
+  .hotspot.active circle{ fill:var(--coral); r:16; }
+  .hotspot.seen circle{ fill:var(--teal); }
+  .pulse{ animation:pulseAnim 2s infinite; }
+  @keyframes pulseAnim{
+    0%{opacity:1;} 50%{opacity:.55;} 100%{opacity:1;}
+  }
+
+  .panel-detail h3{
+    font-family:var(--font-display);
+    font-size:20px; color:var(--navy); margin:0 0 4px;
+  }
+  .panel-detail .hint{color:var(--slate-soft); font-size:13.5px; line-height:1.6;}
+  .term-list{margin-top:14px; display:flex; flex-direction:column; gap:10px;}
+  .term-card{
+    border:1px solid var(--line);
+    background:var(--bg);
+    border-radius:12px;
+    padding:12px 14px;
+  }
+  .term-card b{color:var(--navy-2); display:block; font-size:14px; margin-bottom:3px;}
+  .term-card span{color:var(--ink); font-size:13.5px; line-height:1.5;}
+
+  .empty-state{
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+    min-height:220px; color:var(--slate-soft);
+  }
+  .empty-state .glyph{font-size:34px; margin-bottom:10px;}
+
+  .footer-note{
+    background:var(--teal-soft);
+    border:1px solid #bfe6e1;
+    color:#0b5c56;
+    border-radius:14px;
+    padding:14px 18px;
+    font-size:13.5px;
+    margin-top:22px;
+    line-height:1.6;
+  }
+  .footer-note b{color:#08403c;}
+
+  /* ---------- QUIZ ---------- */
+  .quiz-wrap{max-width:760px; margin:0 auto;}
+  .quiz-card{
+    background:var(--card); border:1px solid var(--line); border-radius:20px;
+    padding:28px; position:relative; overflow:hidden;
+  }
+  .quiz-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .quiz-meta .tag{
+    font-family:var(--font-mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    background:var(--bg); border:1px solid var(--line); padding:4px 10px; border-radius:8px; color:var(--slate);
+  }
+  .quiz-q{font-family:var(--font-display); font-size:20px; line-height:1.4; color:var(--navy); margin:6px 0 18px;}
+  .quiz-options{display:flex; flex-direction:column; gap:10px;}
+  .opt-btn{
+    text-align:left; border:1.5px solid var(--line); background:#fff;
+    border-radius:12px; padding:13px 16px; font-size:14.5px; color:var(--ink);
+    cursor:pointer; transition:all .15s ease; font-family:var(--font-body);
+  }
+  .opt-btn:hover{border-color:var(--navy-2); background:#f7f9ff;}
+  .opt-btn.correct{background:var(--teal-soft); border-color:var(--teal); color:#0b5c56; font-weight:700;}
+  .opt-btn.wrong{background:var(--coral-soft); border-color:var(--coral); color:#8c2333; font-weight:700;}
+  .opt-btn[disabled]{cursor:default;}
+  .quiz-feedback{margin-top:16px; font-size:13.5px; color:var(--slate); min-height:20px;}
+  .quiz-actions{display:flex; justify-content:space-between; align-items:center; margin-top:20px;}
+  .next-btn{
+    background:var(--navy); color:#fff; border:none; border-radius:10px;
+    padding:11px 20px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  .next-btn:disabled{opacity:.35; cursor:not-allowed;}
+  .quiz-progress{font-family:var(--font-mono); font-size:12px; color:var(--slate-soft);}
+
+  .result-card{text-align:center; padding:40px 24px;}
+  .result-card .big{font-family:var(--font-display); font-size:48px; color:var(--navy);}
+  .restart-btn{
+    margin-top:18px; background:var(--coral); color:#fff; border:none; border-radius:10px;
+    padding:12px 22px; font-weight:700; cursor:pointer; font-size:14px;
+  }
+
+  .badge-lvl{
+    display:inline-block; font-family:var(--font-mono); font-size:11px; letter-spacing:.08em;
+    padding:3px 9px; border-radius:7px; margin-left:8px; vertical-align:middle;
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="eyebrow"><span class="dot"></span> UCSC · Semiología Clínica</div>
+  <h1 class="brand">Neuro-Explorador</h1>
+  <p class="brand-sub">Un recorrido interactivo por el Manual de Examen Neurológico del Dr. Jaime Leñero Navarrete. Explora cada estructura en el mapa, revisa su definición y pon a prueba lo aprendido en el quiz final.</p>
+  <div class="score-pill">
+    <div class="n" id="scoreDisplay">0</div>
+    <div class="l">puntos</div>
+  </div>
+</header>
+
+<nav class="chapters" id="chapterNav"></nav>
+
+<main id="mainArea"></main>
+
+<script>
+/* =========================================================
+   DATOS — Manual de Examen Neurológico
+   ========================================================= */
+
+const CHAPTERS = [
+{
+  id:0, tag:"Capítulo 1", title:"Examen Mental y Funciones Cognitivas",
+  intro:"El examen mental explora el nivel de conciencia y las funciones corticales superiores. Haz clic en cada zona del cerebro para revisar sus contenidos.",
+  diagramCaption:"Corte sagital del encéfalo — cada punto se ubica sobre el lóbulo o estructura responsable.",
+  hotspots:[
+    {x:246,y:298,label:"1"}, {x:270,y:258,label:"2"}, {x:246,y:88,label:"3"},
+    {x:108,y:222,label:"4"}, {x:150,y:168,label:"5"}, {x:205,y:185,label:"6"},
+    {x:98,y:108,label:"7"}
+  ],
+  sections:[
+    {title:"1 · Conciencia (evaluación cuantitativa)", items:[
+      ["Vigil","Plena alerta."],
+      ["Obnubilación","Somnolencia; responde a órdenes simples pero con lentitud y distracción."],
+      ["Sopor","Paciente dormido. Se divide en Superficial (voz), Medio (tacto) y Profundo (dolor)."],
+      ["Coma","Ausencia total de vigilia. No puede ser despertado ni con estímulos dolorosos intensos."]
+    ]},
+    {title:"2 · Escala de Coma de Glasgow (GCS)", items:[
+      ["Ocular","4 espontánea · 3 a la voz · 2 al dolor · 1 nula."],
+      ["Verbal","5 orientado · 4 confuso · 3 inapropiado · 2 incomprensible · 1 nula."],
+      ["Motor","6 obedece órdenes · 5 localiza dolor · 4 retira al dolor · 3 flexión (decorticación) · 2 extensión (descerebración) · 1 nula."],
+      ["Rango total","Puntuación mínima: 3 · Puntuación máxima: 15."]
+    ]},
+    {title:"3 · Atención y Orientación", items:[
+      ["Atención","Capacidad de focalizar la conciencia: inversión de series (meses hacia atrás), Digit Span (repetir números)."],
+      ["Orientación Alopsíquica","Tiempo (fecha) y Espacio (lugar)."],
+      ["Orientación Autopsíquica","Persona (quién es)."]
+    ]},
+    {title:"4 · Memoria y Amnesias", items:[
+      ["Memoria de Corto Plazo","Recordar 3 palabras tras 5 minutos."],
+      ["Memoria de Largo Plazo","Datos generales (presidentes, fechas históricas)."],
+      ["Amnesia Anterógrada (fijación)","Incapaz de retener hechos nuevos."],
+      ["Amnesia Retrógrada (evocación)","Incapaz de recordar hechos pasados."]
+    ]},
+    {title:"5 · Examen del Lenguaje", items:[
+      ["Afasia de Broca","Motora/Expresión: habla no fluida, comprensión conservada. Lesión en lóbulo frontal izquierdo."],
+      ["Afasia de Wernicke","Sensitiva/Comprensión: habla fluida pero incoherente. Lesión en lóbulo temporal posterior."]
+    ]},
+    {title:"6 · Praxias y Gnosias", items:[
+      ["Apraxia Ideatoria","Falla la secuencia (ej. tratar de peinarse con un tenedor)."],
+      ["Apraxia Ideomotora","Incapacidad de imitar gestos o ejecutar ante orden verbal."],
+      ["Apraxia Constructiva","Incapacidad de copiar dibujos o construir modelos."],
+      ["Estereognosia","Reconocer objetos por el tacto con ojos cerrados."],
+      ["Grafestesia","Reconocer números o letras dibujados en la palma de la mano."],
+      ["Anosognosia","Falta de reconocimiento de la propia enfermedad o déficit (ej. tras un ACV)."]
+    ]},
+    {title:"7 · Pensamiento y Afectividad", items:[
+      ["Circunstancial","Muchos detalles, pero llega al punto."],
+      ["Tangencial","No responde lo preguntado directamente."],
+      ["Taquipsiquia","Pensamiento acelerado (manía)."],
+      ["Ideas Delirantes","Creencias falsas e inamovibles."],
+      ["Obsesiones / Fobias","Ideas intrusivas recurrentes / temores irracionales."],
+      ["Emoción vs Sentimiento vs Ánimo","Reacción fugaz · estado afectivo estable · estado basal permanente."]
+    ]}
+  ]
+},
+{
+  id:1, tag:"Capítulo 2", title:"Nervios Craneales (I al XII)",
+  intro:"Cada par craneal tiene una función y un método de exploración específico. Recorre el rostro y la base del cráneo para revisarlos.",
+  diagramCaption:"Perfil facial — cada punto marca la zona de exploración del par craneal correspondiente.",
+  hotspots:[
+    {x:274,y:142,label:"1"}, {x:172,y:92,label:"2"}, {x:196,y:72,label:"3"},
+    {x:214,y:152,label:"4"}, {x:196,y:196,label:"5"}, {x:238,y:168,label:"6"},
+    {x:196,y:262,label:"7"}
+  ],
+  sections:[
+    {title:"1 · NC I — Olfatorio", items:[
+      ["Protocolo","Asegurar permeabilidad de fosas, ocluir una fosa y los ojos, presentar sustancia no irritante (café, menta, limón) y comparar entre fosas."],
+      ["Anosmia","Pérdida completa (causas: TEC, Parkinson)."],
+      ["Hiposmia","Disminución de la sensibilidad olfativa."],
+      ["Parosmia","Percepción olfativa distorsionada."],
+      ["Cacosmia","Percepción de olores desagradables inexistentes."]
+    ]},
+    {title:"2 · NC II — Óptico", items:[
+      ["Agudeza visual","Tabla de Snellen."],
+      ["Campos visuales","Confrontación."],
+      ["Fondo de ojo","Papiledema."],
+      ["Ceguera monocular","Lesión del nervio óptico."],
+      ["Hemianopsia bitemporal","Lesión del quiasma (ej. adenoma hipofisario)."],
+      ["Hemianopsia homónima","Lesión retroquiasmática contralateral."]
+    ]},
+    {title:"3 · NC III, IV y VI — Oculomotilidad", items:[
+      ["NC III (Oculomotor)","Inerva casi todos los rectos. Su lesión causa ptosis y ojo hacia afuera/abajo."],
+      ["NC IV (Troclear)","Inerva el oblicuo superior. Dificultad para mirar hacia abajo y adentro (ej. bajar escaleras)."],
+      ["NC VI (Abducens)","Inerva el recto externo. El ojo no puede abducir (desviación medial)."],
+      ["Reflejo Fotomotor / Consensual","Miosis ipsilateral a la luz / Miosis contralateral."],
+      ["Anisocoria","Diferencia de tamaño pupilar — siempre patológico."],
+      ["Síndrome de Horner","Miosis, Ptosis y Anhidrosis."]
+    ]},
+    {title:"4 · NC V — Trigémino", items:[
+      ["Componente Sensitivo","Ramas V1 (Oftálmica), V2 (Maxilar), V3 (Mandibular). Reflejo corneal: cierre palpebral bilateral."],
+      ["Componente Motor","Músculos masticatorios (masetero, temporales). Reflejo mentoniano: percusión sobre el mentón causa ascenso mandibular."]
+    ]},
+    {title:"5 · NC VII — Facial", items:[
+      ["Parálisis Central","Solo afecta el cuadrante inferior de la cara. El paciente puede arrugar la frente."],
+      ["Parálisis Periférica","Afecta toda la hemicara. Signo de Bell. El paciente no puede arrugar la frente."],
+      ["Sensibilidad","Gusto de los 2/3 anteriores de la lengua."]
+    ]},
+    {title:"6 · NC VIII — Vestibulococlear", items:[
+      ["Prueba de Weber","Lateralización al centro (normal)."],
+      ["Prueba de Rinne","Vía aérea > ósea (normal)."],
+      ["Romberg","Inestabilidad con ojos cerrados."],
+      ["Nistagmus","Movimiento ocular rítmico."]
+    ]},
+    {title:"7 · Nervios Craneales Inferiores (IX, X, XI, XII)", items:[
+      ["NC IX y X","Evaluación del velo del paladar (simetría) y reflejo nauseoso."],
+      ["NC XI (Accesorio)","Fuerza del trapecio (encoger hombros) y ECM (rotar cabeza)."],
+      ["NC XII (Hipogloso)","Trofismo y motilidad de la lengua. Desviación hacia el lado de la lesión."]
+    ]}
+  ]
+},
+{
+  id:2, tag:"Capítulo 3", title:"Examen Motor",
+  intro:"El examen motor evalúa tono, trofismo, fuerza y reflejos. Explora el cuerpo para revisar cada componente.",
+  diagramCaption:"Figura corporal — círculos huecos = articulaciones reflejas; línea punteada = eje de simetría.",
+  hotspots:[
+    {x:140,y:125,label:"1"}, {x:200,y:225,label:"2"}, {x:100,y:205,label:"3"},
+    {x:200,y:140,label:"4"}, {x:212,y:258,label:"5"}, {x:200,y:175,label:"6"}
+  ],
+  sections:[
+    {title:"1 · Tono Muscular: Definiciones", items:[
+      ["Espasticidad","Lesión de Motoneurona Superior (MNS). Depende de la velocidad. \"Signo de la navaja\"."],
+      ["Rigidez","Disfunción extrapiramidal. Constante. \"Tubo de plomo\" o \"Rueda dentada\" (Parkinson)."],
+      ["Hipotonía","Lesión de Motoneurona Inferior (MNI) o Cerebelo. Disminución de resistencia."]
+    ]},
+    {title:"2 · Trofismo Muscular", items:[
+      ["Atrofia","Disminución del volumen muscular. Típica de lesión MNI."],
+      ["Hipertrofia","Aumento del volumen (ej. ejercicio o miotonía)."],
+      ["Pseudohipertrofia","Reemplazo por tejido graso (Distrofia de Duchenne)."]
+    ]},
+    {title:"3 · Escala de Fuerza (MRC)", items:[
+      ["Grado 0","Parálisis total."],
+      ["Grado 1","Contracción visible sin movimiento."],
+      ["Grado 2","Movimiento en plano horizontal (sin gravedad)."],
+      ["Grado 3","Movimiento contra gravedad."],
+      ["Grado 4","Contra gravedad y resistencia parcial."],
+      ["Grado 5","Contra resistencia máxima — fuerza normal."]
+    ]},
+    {title:"4 · Terminología Clínica", items:[
+      ["Hemiplejia","Parálisis de un hemicuerpo (derecho o izquierdo)."],
+      ["Paraplejia","Parálisis de ambas extremidades inferiores."],
+      ["Cuadriplejia","Parálisis de las cuatro extremidades."],
+      ["Sufijos","-plejia (total) | -paresia (parcial)."]
+    ]},
+    {title:"5 · Reflejos Profundos (ROT)", items:[
+      ["Bicipital","Nivel segmentario C5–C6."],
+      ["Tricipital","Nivel segmentario C6–C7."],
+      ["Rotuliano / Patelar","Nivel segmentario L3–L4."],
+      ["Aquiliano","Nivel segmentario S1."],
+      ["Graduación","0 arreflexia · + hiporreflexia · ++ normorreflexia · +++ hiperreflexia (vivo) · ++++ clonus."]
+    ]},
+    {title:"6 · Reflejos Superficiales", items:[
+      ["Cutáneo-Abdominal","Desviación del ombligo al estímulo (T7–T11)."],
+      ["Cremasteriano","Elevación testicular (L1)."],
+      ["Reflejo Plantar","Respuesta normal es la flexión."],
+      ["Signo de Babinski","Extensión del primer ortejo. Indica lesión de la vía piramidal."]
+    ]}
+  ]
+},
+{
+  id:3, tag:"Capítulo 4", title:"Sensibilidad",
+  intro:"La sensibilidad se explora en su componente superficial y se interpreta según grandes síndromes topográficos.",
+  diagramCaption:"Silueta corporal (izq.) y corte transversal medular con sus tractos (der.).",
+  hotspots:[
+    {x:95,y:150,label:"1"}, {x:270,y:180,label:"2"}
+  ],
+  sections:[
+    {title:"1 · Sensibilidad Superficial (Exteroceptiva)", items:[
+      ["Táctil","Pinceladas suaves con algodón. El paciente indica dónde siente."],
+      ["Dolorosa","Uso de aguja estéril. Discriminación entre \"punta\" y \"romo\"."],
+      ["Térmica","Tubos con agua fría y caliente. Poco habitual en el examen de rutina."]
+    ]},
+    {title:"2 · Grandes Síndromes Sensitivos", items:[
+      ["Síndrome de Brown-Séquard","Hemisección medular. Ipsilateral: motor y propiocepción. Contralateral: dolor y temperatura."],
+      ["Síndrome Cordonal Posterior","Pérdida de vibración y posición. Ataxia sensorial."],
+      ["Síndrome Tabético","Sífilis terciaria. Dolores lancinantes y ataxia."]
+    ]}
+  ]
+},
+{
+  id:4, tag:"Capítulo 5", title:"Examen Cerebeloso",
+  intro:"El cerebelo coordina el movimiento voluntario. Su disfunción produce hallazgos característicos y muy reconocibles.",
+  diagramCaption:"Cerebelo (vista posterior) con las pruebas de coordinación asociadas.",
+  hotspots:[
+    {x:75,y:70,label:"1"}, {x:325,y:70,label:"2"}, {x:200,y:255,label:"3"}
+  ],
+  sections:[
+    {title:"1 · Dismetría", items:[
+      ["Índice-Nariz / Talón-Rodilla","El paciente \"pasa de largo\" o tiembla al llegar al objetivo."]
+    ]},
+    {title:"2 · Disdiadococinesia", items:[
+      ["Definición","Incapacidad de realizar movimientos alternantes rápidos (pronosupinación de manos o \"aleteo\")."]
+    ]},
+    {title:"3 · Otros Hallazgos Cerebelosos", items:[
+      ["Disartria Escandida","Habla explosiva, sílaba a sílaba."],
+      ["Nistagmus","Presente con frecuencia en lesiones de fosa posterior."],
+      ["Reflejos Pendulares","La pierna oscila varias veces tras el reflejo rotuliano."]
+    ]}
+  ]
+},
+{
+  id:5, tag:"Capítulo 6", title:"Examen de la Marcha",
+  intro:"Cada patología del sistema nervioso deja una huella característica en el patrón de marcha.",
+  diagramCaption:"Cuatro patrones de marcha patológica, de izquierda a derecha, con su rasgo distintivo.",
+  hotspots:[
+    {x:55,y:195,label:"1"}, {x:150,y:195,label:"2"}, {x:250,y:195,label:"3"}, {x:345,y:195,label:"4"}
+  ],
+  sections:[
+    {title:"1 · Marcha Atáxica (Cerebelosa)", items:[
+      ["Descripción","Base de sustentación amplia, inestable, en zigzag. \"Marcha del ebrio\"."]
+    ]},
+    {title:"2 · Marcha Parkinsoniana", items:[
+      ["Descripción","Pasos cortos, sin braceo, festinante (acelerada), tronco inclinado hacia adelante."]
+    ]},
+    {title:"3 · Marcha Espástica (Segador)", items:[
+      ["Descripción","Hemicuerpo rígido; la pierna describe un semicírculo para avanzar. Típica de secuela de ACV."]
+    ]},
+    {title:"4 · Marcha en Steppage", items:[
+      ["Descripción","Debilidad distal (parálisis del nervio peroneo). El paciente eleva mucho la rodilla para no arrastrar el pie."]
+    ]}
+  ]
+},
+{
+  id:6, tag:"Capítulo 7", title:"Signos Meníngeos",
+  intro:"Los signos de irritación meníngea orientan a cuadros como meningitis o hemorragia subaracnoidea (HSA).",
+  diagramCaption:"Tres maniobras de irritación meníngea en decúbito supino.",
+  hotspots:[
+    {x:65,y:150,label:"1"}, {x:200,y:150,label:"2"}, {x:335,y:150,label:"3"}
+  ],
+  sections:[
+    {title:"1 · Rigidez de Nuca", items:[
+      ["Definición","Resistencia y dolor a la flexión pasiva del cuello hacia el tórax."]
+    ]},
+    {title:"2 · Signo de Kernig", items:[
+      ["Técnica","Al elevar la pierna extendida o flectar cadera/rodilla a 90°, el paciente flecta la rodilla involuntariamente por dolor."]
+    ]},
+    {title:"3 · Signo de Brudzinski", items:[
+      ["Técnica","Al flexionar decididamente la cabeza sobre el tronco, el paciente realiza una flexión refleja de caderas y rodillas."],
+      ["Significado","Indica irritación de las meninges (Meningitis, HSA)."]
+    ]}
+  ],
+  summary:{
+    title:"Resumen del Examen Neurológico",
+    steps:["Examen Mental","Nervios Craneales","Examen Motor (Tono, Fuerza, ROT)","Examen Sensitivo","Coordinación (Cerebelo)","Marcha","Signos Meníngeos"],
+    pearl:"Perla Clínica: siempre comparar la simetría entre ambos hemicuerpos."
+  }
+}
+];
+
+/* =========================================================
+   BANCO DE PREGUNTAS DEL QUIZ
+   ========================================================= */
+const QUIZ_BANK = [
+  {q:"¿Cuál es la puntuación mínima posible en la Escala de Coma de Glasgow?", options:["0","3","5","15"], a:1},
+  {q:"Un paciente dormido que despierta solo ante estímulos dolorosos se encuentra en:", options:["Obnubilación","Sopor profundo","Vigilia","Delirium"], a:1},
+  {q:"La incapacidad de recordar hechos ocurridos ANTES de la lesión se llama amnesia:", options:["Anterógrada","Retrógrada","De fijación","Global"], a:1},
+  {q:"La Afasia de Broca se caracteriza por:", options:["Habla fluida e incoherente","Habla no fluida con comprensión conservada","Pérdida total del lenguaje","Incapacidad de leer solamente"], a:1},
+  {q:"¿Qué lóbulo se lesiona típicamente en la Afasia de Wernicke?", options:["Frontal izquierdo","Occipital","Temporal posterior","Parietal derecho"], a:2},
+  {q:"La incapacidad de copiar dibujos o construir modelos corresponde a:", options:["Apraxia Ideatoria","Apraxia Ideomotora","Apraxia Constructiva","Agnosia visual"], a:2},
+  {q:"Reconocer números dibujados en la palma de la mano con ojos cerrados se llama:", options:["Estereognosia","Grafestesia","Anosognosia","Barestesia"], a:1},
+  {q:"El pensamiento acelerado, típico de la manía, se denomina:", options:["Tangencialidad","Circunstancialidad","Taquipsiquia","Bradipsiquia"], a:2},
+  {q:"La anosmia (pérdida del olfato) se asocia clásicamente a:", options:["Enfermedad de Parkinson","Síndrome de Horner","Hemianopsia bitemporal","Distrofia de Duchenne"], a:0},
+  {q:"Una hemianopsia bitemporal sugiere lesión en:", options:["El nervio óptico","El quiasma óptico","La radiación óptica","El cuerpo geniculado lateral"], a:1},
+  {q:"¿Qué nervio craneal inerva el músculo recto externo (abducens)?", options:["NC III","NC IV","NC V","NC VI"], a:3},
+  {q:"La ptosis palpebral y el ojo desviado hacia afuera/abajo sugieren lesión de:", options:["NC III (Oculomotor)","NC IV (Troclear)","NC VI (Abducens)","NC VII (Facial)"], a:0},
+  {q:"El Síndrome de Horner se caracteriza por la tríada:", options:["Ptosis, miosis y anhidrosis","Ptosis, midriasis y sudoración","Nistagmus, ataxia y temblor","Ptosis, midriasis y anhidrosis"], a:0},
+  {q:"El reflejo corneal (cierre palpebral bilateral al tocar la córnea) evalúa principalmente al:", options:["NC V (sensitivo) y NC VII (motor)","NC III y NC IV","NC VIII únicamente","NC IX y X"], a:0},
+  {q:"En una parálisis facial PERIFÉRICA, el paciente:", options:["Puede arrugar la frente","No puede arrugar la frente","Solo pierde el gusto","Presenta hemianopsia"], a:1},
+  {q:"En la prueba de Rinne normal, se espera que:", options:["La vía ósea sea mayor que la aérea","La vía aérea sea mayor que la ósea","No haya percepción ósea","El sonido lateralice"], a:1},
+  {q:"El signo de Bell (el ojo se dirige hacia arriba al intentar cerrarlo) aparece en la parálisis facial:", options:["Central","Periférica","Bilateral idiopática solamente","Ninguna de las anteriores"], a:1},
+  {q:"El nervio XI (Accesorio) se evalúa mediante la fuerza de:", options:["Masetero y temporales","Trapecio y esternocleidomastoideo","Músculos de la lengua","Velo del paladar"], a:1},
+  {q:"La desviación de la lengua hacia el lado de la lesión indica compromiso del:", options:["NC IX","NC X","NC XI","NC XII"], a:3},
+  {q:"La espasticidad (signo de la navaja) es característica de una lesión de:", options:["Motoneurona superior","Motoneurona inferior","Cerebelo exclusivamente","Nervio periférico sensitivo"], a:0},
+  {q:"La rigidez tipo \"rueda dentada\" es típica de:", options:["Esclerosis múltiple","Enfermedad de Parkinson","Miastenia gravis","Síndrome de Guillain-Barré"], a:1},
+  {q:"La pseudohipertrofia muscular (reemplazo por tejido graso) es característica de:", options:["Distrofia muscular de Duchenne","Esclerosis lateral amiotrófica","Enfermedad de Parkinson","Ataxia de Friedreich"], a:0},
+  {q:"En la escala MRC, el Grado 3 corresponde a:", options:["Contracción visible sin movimiento","Movimiento solo sin gravedad","Movimiento contra gravedad","Fuerza normal contra resistencia"], a:2},
+  {q:"El reflejo rotuliano (patelar) corresponde al nivel segmentario:", options:["C5-C6","L1","L3-L4","S1"], a:2},
+  {q:"El reflejo aquiliano corresponde al nivel segmentario:", options:["C6-C7","L3-L4","S1","T7-T11"], a:2},
+  {q:"El signo de Babinski (extensión del primer ortejo) indica lesión de:", options:["La vía piramidal","El cerebelo","El nervio periférico sensitivo","Los ganglios basales"], a:0},
+  {q:"El Síndrome de Brown-Séquard se produce por:", options:["Hemisección medular","Lesión difusa cortical","Compresión del quiasma óptico","Lesión del nervio facial"], a:0},
+  {q:"En el Síndrome Cordonal Posterior se pierde principalmente:", options:["Dolor y temperatura","Vibración y posición (propiocepción)","Tacto grosero solamente","Olfato"], a:1},
+  {q:"El síndrome tabético se asocia a:", options:["Sífilis terciaria","Diabetes mellitus tipo 1","Déficit de vitamina C","Intoxicación por plomo"], a:0},
+  {q:"La incapacidad de realizar movimientos alternantes rápidos de pronosupinación se llama:", options:["Dismetría","Disdiadococinesia","Disartria escandida","Ataxia sensorial"], a:1},
+  {q:"El habla \"explosiva\", sílaba a sílaba, típica de disfunción cerebelosa se denomina:", options:["Afasia de Broca","Disartria escandida","Afasia de Wernicke","Taquilalia"], a:1},
+  {q:"La marcha con base de sustentación amplia e inestable, \"del ebrio\", es característica de lesión:", options:["Cerebelosa","Parkinsoniana","Piramidal (espástica)","Del nervio peroneo"], a:0},
+  {q:"La marcha en \"steppage\", con elevación exagerada de la rodilla, se debe a debilidad de:", options:["Cuádriceps","Nervio peroneo (dorsiflexores del pie)","Glúteo medio","Psoas ilíaco"], a:1},
+  {q:"La marcha \"en segador\", con la pierna describiendo un semicírculo, es típica de secuela de:", options:["Accidente cerebrovascular (ACV)","Enfermedad de Parkinson","Polineuropatía diabética","Ataxia cerebelosa"], a:0},
+  {q:"El signo de Kernig se considera positivo cuando:", options:["El paciente flecta la rodilla involuntariamente por dolor al extenderla","El paciente arruga la frente","Hay midriasis bilateral","El reflejo plantar es en flexión"], a:0},
+  {q:"El signo de Brudzinski se explora mediante:", options:["Flexión pasiva del cuello sobre el tórax observando flexión de caderas/rodillas","Extensión forzada del brazo","Percusión del tendón rotuliano","Rotación cefálica contra resistencia"], a:0},
+  {q:"Los signos meníngeos (Kernig, Brudzinski, rigidez de nuca) orientan clínicamente a:", options:["Meningitis o hemorragia subaracnoidea","Migraña simple","Neuropatía periférica","Distrofia muscular"], a:0},
+  {q:"Según el manual, la 'perla clínica' central del examen neurológico es:", options:["Medir siempre la presión arterial primero","Comparar la simetría entre ambos hemicuerpos","Preguntar solo por antecedentes familiares","Evaluar únicamente los reflejos"], a:1}
+];
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+let state = {
+  currentChapter:0,
+  view:"chapter", // "chapter" | "quiz"
+  seen:new Set(), // "chapterIdx-sectionIdx"
+  score:0,
+  quizOrder:[],
+  quizIndex:0,
+  quizScore:0,
+  answered:false
+};
+
+function shuffled(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function chapterCompletion(chIdx){
+  const ch = CHAPTERS[chIdx];
+  let seenCount = 0;
+  ch.sections.forEach((s,i)=>{ if(state.seen.has(chIdx+"-"+i)) seenCount++; });
+  return {seen:seenCount, total:ch.sections.length};
+}
+
+/* =========================================================
+   RENDER: NAV
+   ========================================================= */
+function renderNav(){
+  const nav = document.getElementById('chapterNav');
+  nav.innerHTML = "";
+  CHAPTERS.forEach((ch,i)=>{
+    const c = chapterCompletion(i);
+    const btn = document.createElement('button');
+    btn.className = 'ch-btn' + (state.view==="chapter" && state.currentChapter===i ? ' active':'') + (c.seen===c.total ? ' done':'');
+    btn.innerHTML = `<span class="num">${i+1}</span> ${ch.title.split('(')[0].trim()}`;
+    btn.onclick = ()=>{ state.view="chapter"; state.currentChapter=i; render(); };
+    nav.appendChild(btn);
+  });
+  const quizBtn = document.createElement('button');
+  quizBtn.className = 'ch-btn quiz-btn' + (state.view==="quiz" ? ' active':'');
+  quizBtn.innerHTML = `🧠 Quiz Final`;
+  quizBtn.onclick = ()=>{ startQuiz(); };
+  nav.appendChild(quizBtn);
+}
+
+/* =========================================================
+   RENDER: DIAGRAM (SVG genérico con hotspots)
+   ========================================================= */
+function buildDiagramSVG(chIdx){
+  const ch = CHAPTERS[chIdx];
+  const bgShapes = DIAGRAM_ART[chIdx] || "";
+  let hotspotsSVG = "";
+  ch.hotspots.forEach((h,i)=>{
+    const key = chIdx+"-"+i;
+    const isSeen = state.seen.has(key);
+    const isActive = state.activeSection===i;
+    hotspotsSVG += `
+      <g class="hotspot ${isActive?'active':''} ${isSeen?'seen':''}" data-i="${i}" onclick="selectSection(${chIdx},${i})">
+        <circle cx="${h.x}" cy="${h.y}" r="14" class="${!isSeen?'pulse':''}"/>
+        <text x="${h.x}" y="${h.y+1}">${h.label}</text>
+      </g>`;
+  });
+  return `<svg class="diagram" viewBox="0 0 400 340" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0,0 L10,5 L0,10 Z" fill="#9fb0d6"/>
+      </marker>
+    </defs>
+    ${bgShapes}
+    ${hotspotsSVG}
+  </svg>`;
+}
+
+const DIAGRAM_ART = [
+
+/* ===== Cap 1 — Encéfalo, corte sagital con lóbulos ===== */
+`
+<g font-family="monospace" font-size="9.5" fill="#8a97b5" font-style="italic">
+  <ellipse cx="300" cy="248" rx="42" ry="34" fill="#dbe9f6" stroke="#a9c7e3" stroke-width="1.5"/>
+  <path d="M270,232 C285,225 315,225 330,232 M266,244 C284,238 316,238 334,244 M266,256 C284,264 316,264 334,256 M270,266 C285,272 315,272 330,266"
+        fill="none" stroke="#b7d3ea" stroke-width="1.2"/>
+  <path d="M292,272 C282,288 272,300 262,312 C256,320 252,326 250,332" fill="none" stroke="#9fb0d6" stroke-width="9" stroke-linecap="round"/>
+  <path d="M55,150 C50,100 80,55 140,45 C180,35 240,35 280,55 C320,75 345,110 345,150
+           C348,175 340,195 322,206 C332,224 322,246 298,256 C282,282 250,290 226,272
+           C206,290 176,292 156,278 C130,290 100,282 92,260 C66,250 46,225 46,195
+           C41,180 49,163 55,150 Z"
+        fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2.2"/>
+  <path d="M204,42 C202,80 198,120 194,155" fill="none" stroke="#aebee6" stroke-width="2"/>
+  <path d="M108,158 C140,168 175,172 208,166 C232,178 258,178 232,168" fill="none" stroke="#aebee6" stroke-width="2"/>
+  <path d="M300,60 C296,85 293,105 288,120" fill="none" stroke="#aebee6" stroke-width="1.6"/>
+  <path d="M88,258 C120,240 165,222 205,168" fill="none" stroke="#c7d3ef" stroke-width="1.2" stroke-dasharray="2,3"/>
+  <text x="95" y="82">frontal</text>
+  <text x="252" y="66">parietal</text>
+  <text x="118" y="248">temporal</text>
+  <text x="308" y="96">occipital</text>
+  <text x="300" y="298">cerebelo</text>
+  <text x="228" y="325">tronco</text>
+</g>
+`,
+
+/* ===== Cap 2 — Perfil facial con rasgos y pares craneales ===== */
+`
+<g font-family="monospace" font-size="9.5" fill="#8a97b5" font-style="italic">
+  <path d="M100,70 C95,45 125,30 165,32 C200,34 225,50 235,75
+           C255,80 275,105 278,135 C282,150 278,162 265,168
+           C270,182 260,196 245,205 C248,222 235,235 218,240
+           C215,255 200,268 185,268 L175,268 C165,268 160,255 158,240
+           C130,235 108,215 100,190 C85,180 78,160 82,140
+           C70,130 65,110 70,95 C75,80 85,72 100,70 Z"
+        fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2.2"/>
+  <path d="M155,78 C165,73 182,73 190,77" fill="none" stroke="#7c8db8" stroke-width="2.4" stroke-linecap="round"/>
+  <ellipse cx="172" cy="92" rx="10" ry="6" fill="#fff" stroke="#7c8db8" stroke-width="1.6"/>
+  <circle cx="175" cy="92" r="3" fill="#4a5b8a"/>
+  <circle cx="270" cy="150" r="3" fill="#9fb0d6"/>
+  <path d="M212,218 C222,224 236,222 244,214" fill="none" stroke="#7c8db8" stroke-width="2" stroke-linecap="round"/>
+  <ellipse cx="112" cy="205" rx="15" ry="22" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.8"/>
+  <path d="M108,192 C118,196 118,214 106,218" fill="none" stroke="#9fb0d6" stroke-width="1.4"/>
+  <path d="M187,258 L182,300" fill="none" stroke="#8fa3d1" stroke-width="14" stroke-linecap="round"/>
+  <text x="284" y="146">nariz (I)</text>
+  <text x="172" y="70">ojo (II)</text>
+  <text x="98" y="200">oído (VIII)</text>
+  <text x="200" y="240">boca / mandíbula</text>
+  <text x="178" y="300">cuello (IX–XII)</text>
+</g>
+`,
+
+/* ===== Cap 3 — Figura corporal con articulaciones reflejas ===== */
+`
+<g font-family="monospace" font-size="9" fill="#8a97b5" font-style="italic">
+  <line x1="200" y1="30" x2="200" y2="330" stroke="#c7d3ef" stroke-width="1.4" stroke-dasharray="4,4"/>
+  <circle cx="200" cy="50" r="22" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+  <rect x="192" y="72" width="16" height="10" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+  <rect x="168" y="82" width="64" height="110" rx="20" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+  <path d="M168,96 C150,112 132,130 125,150" stroke="#9fb0d6" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <path d="M232,96 C250,112 268,130 275,150" stroke="#9fb0d6" stroke-width="11" stroke-linecap="round" fill="none"/>
+  <circle cx="125" cy="150" r="7" fill="#fff" stroke="#7c8db8" stroke-width="2.2"/>
+  <circle cx="275" cy="150" r="7" fill="#fff" stroke="#7c8db8" stroke-width="2.2"/>
+  <path d="M125,157 C112,172 102,188 100,205" stroke="#9fb0d6" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <path d="M275,157 C288,172 298,188 300,205" stroke="#9fb0d6" stroke-width="10" stroke-linecap="round" fill="none"/>
+  <circle cx="100" cy="209" r="9" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.8"/>
+  <circle cx="300" cy="209" r="9" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.8"/>
+  <path d="M185,192 L188,258" stroke="#9fb0d6" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <path d="M215,192 L212,258" stroke="#9fb0d6" stroke-width="15" stroke-linecap="round" fill="none"/>
+  <circle cx="188" cy="258" r="7" fill="#fff" stroke="#7c8db8" stroke-width="2.2"/>
+  <circle cx="212" cy="258" r="7" fill="#fff" stroke="#7c8db8" stroke-width="2.2"/>
+  <path d="M188,265 L185,315" stroke="#9fb0d6" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <path d="M212,265 L215,315" stroke="#9fb0d6" stroke-width="13" stroke-linecap="round" fill="none"/>
+  <circle cx="185" cy="319" r="6" fill="#fff" stroke="#7c8db8" stroke-width="2"/>
+  <circle cx="215" cy="319" r="6" fill="#fff" stroke="#7c8db8" stroke-width="2"/>
+  <ellipse cx="178" cy="326" rx="14" ry="6" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.5"/>
+  <ellipse cx="222" cy="326" rx="14" ry="6" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.5"/>
+  <text x="118" y="140">C5–C7</text>
+  <text x="255" y="140">C5–C7</text>
+  <text x="222" y="252">L3–L4</text>
+  <text x="222" y="313">S1</text>
+</g>
+`,
+
+/* ===== Cap 4 — Silueta con sensibilidad + corte medular con tractos ===== */
+`
+<g font-family="monospace" font-size="9" fill="#8a97b5" font-style="italic">
+  <circle cx="95" cy="55" r="15" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="1.8"/>
+  <rect x="82" y="70" width="26" height="46" rx="9" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="1.8"/>
+  <path d="M82,80 L54,112" stroke="#9fb0d6" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M108,80 L136,112" stroke="#9fb0d6" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M90,118 L86,180" stroke="#9fb0d6" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M100,118 L104,180" stroke="#9fb0d6" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <ellipse cx="49" cy="120" rx="9" ry="5" fill="#fff" stroke="#8fa3d1" stroke-width="1.3"/>
+  <line x1="47" y1="118" x2="51" y2="122" stroke="#8fa3d1" stroke-width="1"/>
+  <circle cx="140" cy="112" r="5" fill="#f6c9c9" stroke="#d18a8a" stroke-width="1.2"/>
+  <line x1="136" y1="108" x2="144" y2="116" stroke="#b25a5a" stroke-width="1.4"/>
+  <rect x="45" y="150" width="8" height="20" rx="3" fill="#fbe3b0" stroke="#d1a24a" stroke-width="1.2"/>
+  <circle cx="49" cy="170" r="4" fill="#e08a3c"/>
+  <text x="35" y="106">táctil</text>
+  <text x="120" y="104">dolor</text>
+  <text x="30" y="146">térmica</text>
+
+  <circle cx="270" cy="180" r="66" fill="#eef1fb" stroke="#8fa3d1" stroke-width="2"/>
+  <path d="M270,122 C258,140 258,160 270,180 C282,160 282,140 270,122 Z" fill="#cfe3ff" stroke="#8fb0e0" stroke-width="1.2"/>
+  <path d="M206,180 C224,166 224,150 214,132 C246,144 256,164 246,182 Z" fill="#ffe3c2" stroke="#e0ac5c" stroke-width="1.2"/>
+  <path d="M334,180 C316,166 316,150 326,132 C294,144 284,164 294,182 Z" fill="#ffe3c2" stroke="#e0ac5c" stroke-width="1.2"/>
+  <path d="M214,228 C230,210 246,204 258,214 C240,232 226,240 210,236 Z" fill="#ffd6dd" stroke="#e08fa0" stroke-width="1.2"/>
+  <path d="M326,228 C310,210 294,204 282,214 C300,232 314,240 330,236 Z" fill="#ffd6dd" stroke="#e08fa0" stroke-width="1.2"/>
+  <path d="M255,160 C255,148 262,142 270,142 C278,142 285,148 285,160 C285,172 278,196 270,200 C262,196 255,172 255,160 Z"
+        fill="#c9d2e8" stroke="#8fa3d1" stroke-width="1.2"/>
+  <text x="270" y="112" text-anchor="middle">cordón posterior</text>
+  <text x="200" y="255" text-anchor="middle">espinotalámico</text>
+  <text x="340" y="255" text-anchor="middle">espinotalámico</text>
+  <text x="270" y="264" text-anchor="middle">corticoespinal (x2)</text>
+</g>
+`,
+
+/* ===== Cap 5 — Cerebelo con pruebas de coordinación ===== */
+`
+<g font-family="monospace" font-size="9" fill="#8a97b5" font-style="italic">
+  <path d="M28,42 L78,84" stroke="#9fb0d6" stroke-width="4" stroke-linecap="round" fill="none" marker-end="url(#arrowhead)"/>
+  <circle cx="24" cy="38" r="5" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.4"/>
+  <circle cx="86" cy="90" r="7" fill="#fbe3b0" stroke="#d1a24a" stroke-width="1.4"/>
+  <text x="20" y="20">índice → nariz</text>
+
+  <ellipse cx="322" cy="55" rx="22" ry="14" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="1.6" transform="rotate(-15 322 55)"/>
+  <ellipse cx="322" cy="55" rx="22" ry="14" fill="none" stroke="#9fb0d6" stroke-width="1.6" stroke-dasharray="3,3" transform="rotate(25 322 55)"/>
+  <path d="M296,80 C300,90 344,90 348,80" fill="none" stroke="#c7d3ef" stroke-width="1.2" marker-end="url(#arrowhead)"/>
+  <text x="288" y="22">pronosupinación</text>
+
+  <path d="M95,200 C95,150 145,120 200,120 C255,120 305,150 305,200
+           C305,235 255,255 200,255 C145,255 95,235 95,200 Z"
+        fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2.2"/>
+  <path d="M115,150 C150,138 250,138 285,150 M108,172 C150,158 250,158 292,172
+           M105,196 C150,180 250,180 295,196 M110,220 C150,205 250,205 290,220
+           M125,240 C155,228 245,228 275,240"
+        fill="none" stroke="#b7c8ea" stroke-width="1.3"/>
+  <line x1="200" y1="120" x2="200" y2="255" stroke="#c7d3ef" stroke-width="1.2" stroke-dasharray="2,3"/>
+  <text x="200" y="112" text-anchor="middle">vermis</text>
+
+  <g transform="translate(170,270)">
+    <path d="M0,0 C-4,14 -2,26 4,34" fill="none" stroke="#9fb0d6" stroke-width="6" stroke-linecap="round"/>
+    <path d="M4,34 C10,30 14,20 10,10" fill="none" stroke="#c7d3ef" stroke-width="1.2" stroke-dasharray="2,2"/>
+  </g>
+  <text x="170" y="252" text-anchor="middle">reflejo pendular</text>
+  <path d="M215,265 C220,258 228,258 233,265 C228,272 220,272 215,265 Z" fill="#dfe7f7" stroke="#8fa3d1" stroke-width="1.3"/>
+  <path d="M220,262 L226,268 M226,262 L220,268" stroke="#9fb0d6" stroke-width="1"/>
+  <text x="224" y="252" text-anchor="middle">nistagmus</text>
+  <path d="M250,258 Q256,264 250,270 Q262,270 262,262 Q262,254 250,258" fill="none" stroke="#9fb0d6" stroke-width="1.6"/>
+  <text x="256" y="252" text-anchor="middle">disartria</text>
+</g>
+`,
+
+/* ===== Cap 6 — Cuatro patrones de marcha ===== */
+`
+<g font-family="monospace" font-size="8.5" fill="#8a97b5" font-style="italic">
+  <line x1="10" y1="272" x2="390" y2="272" stroke="#dfe4f0" stroke-width="2"/>
+
+  <g>
+    <circle cx="55" cy="108" r="13" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M55,121 L55,180 M55,140 L20,155 M55,140 L90,155 M55,180 L25,230 M55,180 L85,230"
+          stroke="#9fb0d6" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M25,230 Q55,255 85,230" fill="none" stroke="#c7d3ef" stroke-width="1.4" stroke-dasharray="3,3"/>
+    <text x="55" y="290" text-anchor="middle">Atáxica</text>
+    <text x="55" y="300" text-anchor="middle">(base amplia)</text>
+  </g>
+
+  <g>
+    <circle cx="150" cy="118" r="12" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M150,130 C146,150 146,168 150,182" stroke="#9fb0d6" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M150,150 L138,168 M150,150 L156,168" stroke="#9fb0d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M150,182 L142,225 M150,182 L156,225" stroke="#9fb0d6" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M132,232 L148,228 M154,230 L168,234" stroke="#c7d3ef" stroke-width="2"/>
+    <text x="150" y="290" text-anchor="middle">Parkinsoniana</text>
+    <text x="150" y="300" text-anchor="middle">(pasos cortos)</text>
+  </g>
+
+  <g>
+    <circle cx="250" cy="108" r="13" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M250,121 L250,180" stroke="#9fb0d6" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M250,135 L280,150 L268,168" stroke="#9fb0d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M250,180 L245,230" stroke="#9fb0d6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M250,180 Q290,205 265,232" stroke="#9fb0d6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M250,180 Q290,200 267,225" fill="none" stroke="#c7d3ef" stroke-width="1.3" stroke-dasharray="3,3" marker-end="url(#arrowhead)"/>
+    <text x="255" y="290" text-anchor="middle">Espástica</text>
+    <text x="255" y="300" text-anchor="middle">(en segador)</text>
+  </g>
+
+  <g>
+    <circle cx="345" cy="108" r="13" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M345,121 L345,180" stroke="#9fb0d6" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M345,140 L315,155 M345,140 L375,155" stroke="#9fb0d6" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M345,180 L365,210 L345,225" stroke="#9fb0d6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M345,225 L330,235" stroke="#c7d3ef" stroke-width="3" stroke-linecap="round"/>
+    <path d="M345,180 L328,232" stroke="#9fb0d6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <text x="345" y="290" text-anchor="middle">Steppage</text>
+    <text x="345" y="300" text-anchor="middle">(rodilla alta)</text>
+  </g>
+</g>
+`,
+
+/* ===== Cap 7 — Tres maniobras meníngeas en decúbito ===== */
+`
+<g font-family="monospace" font-size="8.5" fill="#8a97b5" font-style="italic">
+  <line x1="10" y1="230" x2="390" y2="230" stroke="#dfe4f0" stroke-width="2"/>
+
+  <g>
+    <ellipse cx="65" cy="110" rx="20" ry="17" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M84,118 C120,130 150,132 175,128" stroke="#9fb0d6" stroke-width="12" stroke-linecap="round" fill="none"/>
+    <path d="M175,128 L200,205" stroke="#9fb0d6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M65,95 C80,80 100,78 110,90" fill="none" stroke="#c7d3ef" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <path d="M100,70 l4,7 l-8,1 Z" fill="#e08a3c"/>
+    <text x="65" y="150" text-anchor="middle">Rigidez de nuca</text>
+    <text x="65" y="160" text-anchor="middle">(flexión pasiva)</text>
+  </g>
+
+  <g>
+    <ellipse cx="180" cy="90" rx="18" ry="15" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M196,96 C220,102 240,104 258,102" stroke="#9fb0d6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M258,102 C266,120 262,132 244,138" stroke="#9fb0d6" stroke-width="10" stroke-linecap="round" fill="none"/>
+    <path d="M244,138 C232,150 228,165 233,180" stroke="#9fb0d6" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <path d="M244,138 C260,150 268,165 262,182" fill="none" stroke="#c7d3ef" stroke-width="1.6" stroke-dasharray="3,3" marker-end="url(#arrowhead)"/>
+    <path d="M254,150 l6,6 l-8,3 Z" fill="#e08a3c"/>
+    <text x="230" y="150" text-anchor="middle">Kernig</text>
+    <text x="230" y="205" text-anchor="middle">(extensión dolorosa</text>
+    <text x="230" y="216" text-anchor="middle">de rodilla)</text>
+  </g>
+
+  <g>
+    <ellipse cx="300" cy="100" rx="18" ry="15" fill="#e7ecf8" stroke="#8fa3d1" stroke-width="2"/>
+    <path d="M296,112 C320,120 340,122 356,120" stroke="#9fb0d6" stroke-width="11" stroke-linecap="round" fill="none"/>
+    <path d="M312,88 C304,78 292,74 282,80" fill="none" stroke="#c7d3ef" stroke-width="1.8" marker-end="url(#arrowhead)"/>
+    <path d="M356,120 C366,138 360,152 344,158" stroke="#9fb0d6" stroke-width="9" stroke-linecap="round" fill="none"/>
+    <path d="M344,158 C336,168 334,180 338,190" stroke="#9fb0d6" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M356,120 C368,140 362,155 344,162" fill="none" stroke="#c7d3ef" stroke-width="1.4" stroke-dasharray="3,3" marker-end="url(#arrowhead)"/>
+    <text x="330" y="150" text-anchor="middle">Brudzinski</text>
+    <text x="330" y="205" text-anchor="middle">(flexión cuello →</text>
+    <text x="330" y="216" text-anchor="middle">flexión de piernas)</text>
+  </g>
+</g>
+`
+];
+
+/* =========================================================
+   RENDER: CHAPTER VIEW
+   ========================================================= */
+function renderChapter(){
+  const chIdx = state.currentChapter;
+  const ch = CHAPTERS[chIdx];
+  const c = chapterCompletion(chIdx);
+  const main = document.getElementById('mainArea');
+
+  const activeIdx = state.activeSection;
+  const activeSection = (activeIdx!==undefined && activeIdx!==null) ? ch.sections[activeIdx] : null;
+
+  main.innerHTML = `
+    <div class="chapter-head">
+      <div class="kicker">${ch.tag} · ${c.seen}/${c.total} explorado${c.seen===1?'':'s'}</div>
+      <h2>${ch.title}</h2>
+      <p>${ch.intro}</p>
+      <div class="progress-track"><div class="progress-fill" style="width:${(c.seen/c.total)*100}%"></div></div>
+    </div>
+    <div class="split">
+      <div class="panel panel-diagram">
+        ${buildDiagramSVG(chIdx)}
+        <div class="diagram-caption">${ch.diagramCaption}</div>
+      </div>
+      <div class="panel panel-detail" id="detailPanel">
+        ${activeSection ? renderSectionDetail(activeSection) : renderEmptyState()}
+      </div>
+    </div>
+    ${ch.summary ? renderSummary(ch.summary) : ""}
+  `;
+}
+
+function renderEmptyState(){
+  return `
+    <div class="empty-state">
+      <div class="glyph">🖱️</div>
+      <div><b style="color:var(--navy)">Selecciona un punto del mapa</b></div>
+      <div style="margin-top:6px;">Haz clic en cualquiera de los números para revisar su definición clínica aquí.</div>
+    </div>`;
+}
+
+function renderSectionDetail(section){
+  let itemsHTML = section.items.map(([term,def])=>`
+    <div class="term-card"><b>${term}</b><span>${def}</span></div>
+  `).join("");
+  return `
+    <h3>${section.title}</h3>
+    <div class="hint">Toca otra estructura del mapa para seguir explorando este capítulo.</div>
+    <div class="term-list">${itemsHTML}</div>
+  `;
+}
+
+function renderSummary(summary){
+  const steps = summary.steps.map((s,i)=>`<div class="term-card"><b>${i+1}. ${s}</b></div>`).join("");
+  return `
+    <div class="panel" style="margin-top:20px;">
+      <h3 style="font-family:var(--font-display); color:var(--navy); margin-top:0;">${summary.title}</h3>
+      <div class="term-list" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));">${steps}</div>
+      <div class="footer-note"><b>${summary.pearl}</b></div>
+    </div>
+  `;
+}
+
+function selectSection(chIdx, sIdx){
+  state.currentChapter = chIdx;
+  const key = chIdx+"-"+sIdx;
+  if(!state.seen.has(key)){
+    state.seen.add(key);
+    state.score += 5;
+  }
+  state.activeSection = sIdx;
+  render();
+}
+
+/* =========================================================
+   QUIZ
+   ========================================================= */
+function startQuiz(){
+  state.view = "quiz";
+  state.quizOrder = shuffled(QUIZ_BANK.map((_,i)=>i)).slice(0, 12);
+  state.quizIndex = 0;
+  state.quizScore = 0;
+  state.answered = false;
+  render();
+}
+
+function renderQuiz(){
+  const main = document.getElementById('mainArea');
+  if(state.quizIndex >= state.quizOrder.length){
+    renderQuizResult();
+    return;
+  }
+  const qData = QUIZ_BANK[state.quizOrder[state.quizIndex]];
+  const opts = qData.options.map((opt,i)=>`
+    <button class="opt-btn" data-i="${i}" onclick="answerQuiz(${i})">${opt}</button>
+  `).join("");
+
+  main.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="quiz-card">
+        <div class="quiz-meta">
+          <span class="tag">Pregunta ${state.quizIndex+1} / ${state.quizOrder.length}</span>
+          <span class="tag">Puntaje: ${state.quizScore}</span>
+        </div>
+        <div class="quiz-q">${qData.q}</div>
+        <div class="quiz-options" id="quizOptions">${opts}</div>
+        <div class="quiz-feedback" id="quizFeedback"></div>
+        <div class="quiz-actions">
+          <span class="quiz-progress">MEDLINE-STYLE MCQ · manual UCSC</span>
+          <button class="next-btn" id="nextBtn" disabled onclick="nextQuiz()">Siguiente →</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function answerQuiz(i){
+  if(state.answered) return;
+  state.answered = true;
+  const qData = QUIZ_BANK[state.quizOrder[state.quizIndex]];
+  const buttons = document.querySelectorAll('#quizOptions .opt-btn');
+  buttons.forEach((b,idx)=>{
+    b.disabled = true;
+    if(idx===qData.a) b.classList.add('correct');
+    else if(idx===i) b.classList.add('wrong');
+  });
+  const feedback = document.getElementById('quizFeedback');
+  if(i===qData.a){
+    state.quizScore += 10;
+    state.score += 10;
+    feedback.innerHTML = "✅ ¡Correcto! Bien identificado.";
+  } else {
+    feedback.innerHTML = "❌ No es correcto. Revisa la opción resaltada en verde.";
+  }
+  document.getElementById('nextBtn').disabled = false;
+  document.getElementById('scoreDisplay').textContent = state.score;
+}
+
+function nextQuiz(){
+  state.quizIndex += 1;
+  state.answered = false;
+  render();
+}
+
+function renderQuizResult(){
+  const main = document.getElementById('mainArea');
+  const total = state.quizOrder.length * 10;
+  const pct = Math.round((state.quizScore/total)*100);
+  let level = "Sigue repasando";
+  let color = "var(--coral)";
+  if(pct>=80){ level="Nivel Interno de Neurología"; color="var(--teal)"; }
+  else if(pct>=50){ level="Buen manejo semiológico"; color="var(--amber)"; }
+
+  main.innerHTML = `
+    <div class="quiz-wrap">
+      <div class="quiz-card result-card">
+        <div class="eyebrow" style="justify-content:center; color:var(--slate);">Resultado final</div>
+        <div class="big">${pct}%</div>
+        <p style="color:var(--slate); font-size:14.5px;">${state.quizScore} de ${total} puntos posibles.</p>
+        <span class="badge-lvl" style="background:${color}22; color:${color};">${level}</span>
+        <div>
+          <button class="restart-btn" onclick="startQuiz()">Repetir Quiz</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/* =========================================================
+   RENDER MASTER
+   ========================================================= */
+function render(){
+  renderNav();
+  document.getElementById('scoreDisplay').textContent = state.score;
+  if(state.view==="quiz"){
+    renderQuiz();
+  } else {
+    renderChapter();
+  }
+}
+
+render();
+</script>
+</body>
+</html>

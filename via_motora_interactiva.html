@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vía Motora · Explorador Interactivo</title>
+<style>
+  :root{
+    --bg:#0a0d13;
+    --bg2:#0f1420;
+    --panel:#131a27;
+    --panel2:#171f2e;
+    --line: rgba(255,255,255,.08);
+    --text:#e9edf5;
+    --dim:#8b96ab;
+    --cyan:#00e6c3;
+    --cyan-dim: rgba(0,230,195,.15);
+    --amber:#ff9452;
+    --amber-dim: rgba(255,148,82,.15);
+    --crimson:#ef4b63;
+    --crimson-dim: rgba(239,75,99,.15);
+    --violet:#9c8cf9;
+    --violet-dim: rgba(156,140,249,.15);
+    --serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Times New Roman', serif;
+    --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(0,230,195,.08), transparent 60%),
+      radial-gradient(900px 500px at 0% 100%, rgba(156,140,249,.06), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.5;
+    min-height:100vh;
+  }
+  ::selection{ background: var(--cyan-dim); color:var(--text); }
+
+  /* HEADER */
+  header{
+    padding:28px 24px 18px;
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:50;
+    background: rgba(10,13,19,.88);
+    backdrop-filter: blur(10px);
+  }
+  .eyebrow{
+    font-family:var(--mono); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--cyan); display:flex; align-items:center; gap:8px; margin-bottom:6px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan); box-shadow:0 0 8px var(--cyan); animation: blink 1.6s infinite;}
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  h1{
+    font-family:var(--serif); font-weight:400; font-size:clamp(24px,3.4vw,38px);
+    margin:0 0 4px; letter-spacing:.2px;
+  }
+  h1 em{ font-style:normal; color:var(--cyan); }
+  .subtitle{ color:var(--dim); font-size:14px; max-width:720px; }
+
+  .progress-wrap{ margin-top:14px; display:flex; align-items:center; gap:12px; }
+  .progress-track{
+    flex:1; max-width:340px; height:6px; border-radius:4px; background:var(--panel2); overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .progress-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--cyan),var(--violet)); transition:width .4s ease; }
+  .progress-label{ font-family:var(--mono); font-size:11px; color:var(--dim); white-space:nowrap; }
+
+  /* NAV TABS */
+  nav{
+    display:flex; gap:6px; overflow-x:auto; margin-top:16px; padding-bottom:2px;
+    scrollbar-width: thin;
+  }
+  nav::-webkit-scrollbar{ height:4px; }
+  nav::-webkit-scrollbar-thumb{ background:var(--panel2); border-radius:4px; }
+  .tab{
+    flex:0 0 auto; padding:8px 14px; border-radius:8px; border:1px solid var(--line);
+    background:var(--panel); color:var(--dim); font-size:12.5px; cursor:pointer; white-space:nowrap;
+    font-family:var(--mono); letter-spacing:.02em; transition:.15s;
+  }
+  .tab:hover{ color:var(--text); border-color:rgba(255,255,255,.2); }
+  .tab.active{ background:var(--cyan-dim); color:var(--cyan); border-color:var(--cyan); }
+
+  main{ max-width:1180px; margin:0 auto; padding:28px 24px 80px; }
+  section.view{ display:none; animation: fade .35s ease; }
+  section.view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+
+  .section-head{ margin-bottom:20px; }
+  .section-head .kicker{ font-family:var(--mono); font-size:11px; color:var(--violet); text-transform:uppercase; letter-spacing:.14em; }
+  .section-head h2{ font-family:var(--serif); font-size:clamp(22px,2.6vw,30px); margin:4px 0 8px; font-weight:400; }
+  .section-head p{ color:var(--dim); max-width:760px; font-size:14.5px; }
+
+  .grid2{
+    display:grid; grid-template-columns: 1.1fr 1fr; gap:22px; align-items:stretch;
+  }
+  @media (max-width:880px){ .grid2{ grid-template-columns:1fr; } }
+
+  .diagram-card, .info-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px;
+    position:relative;
+  }
+  .diagram-card{ display:flex; flex-direction:column; }
+  .card-label{ font-family:var(--mono); font-size:10.5px; color:var(--dim); text-transform:uppercase; letter-spacing:.14em; margin-bottom:10px; }
+  svg{ width:100%; height:auto; display:block; }
+
+  .hotspot{ cursor:pointer; }
+  .hotspot circle.dot{ fill:var(--cyan); stroke:#03110d; stroke-width:2; transition:.15s; }
+  .hotspot:hover circle.dot, .hotspot.active circle.dot{ fill:var(--amber); r:9; }
+  .hotspot circle.ring{ fill:none; stroke:var(--cyan); stroke-width:1.4; opacity:.55; animation:pulse-ring 2.2s infinite; }
+  .hotspot.active circle.ring{ stroke:var(--amber); }
+  @keyframes pulse-ring{ 0%{ r:9; opacity:.6;} 100%{ r:20; opacity:0;} }
+  .hotspot text{ font-family:var(--mono); font-size:9.5px; fill:var(--dim); }
+
+  .signal-dot{ fill:var(--cyan); filter:drop-shadow(0 0 6px var(--cyan)); }
+
+  .info-card{ display:flex; flex-direction:column; gap:10px; min-height:100%; }
+  .info-title{ font-family:var(--serif); font-size:19px; color:var(--text); display:flex; align-items:center; gap:8px;}
+  .info-title .tag{ font-family:var(--mono); font-size:10px; padding:2px 7px; border-radius:5px; background:var(--cyan-dim); color:var(--cyan); }
+  .info-body{ color:#c7cfdd; font-size:14px; }
+  .info-body b{ color:var(--text); }
+  .info-placeholder{ color:var(--dim); font-size:13.5px; font-style:italic; }
+  .hint{ font-family:var(--mono); font-size:11px; color:var(--dim); margin-top:auto; padding-top:10px; border-top:1px dashed var(--line); }
+  .source{ font-family:var(--mono); font-size:10px; color:#5c667c; margin-top:6px; }
+
+  .pill-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+  .pill{ font-family:var(--mono); font-size:11px; padding:4px 10px; border-radius:20px; border:1px solid var(--line); color:var(--dim); }
+  .pill.cyan{ border-color:rgba(0,230,195,.4); color:var(--cyan); }
+  .pill.amber{ border-color:rgba(255,148,82,.4); color:var(--amber); }
+  .pill.crimson{ border-color:rgba(239,75,99,.4); color:var(--crimson); }
+  .pill.violet{ border-color:rgba(156,140,249,.4); color:var(--violet); }
+
+  /* Overview cards */
+  .overview-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px;}
+  @media (max-width:880px){ .overview-grid{ grid-template-columns:1fr 1fr; } }
+  @media (max-width:560px){ .overview-grid{ grid-template-columns:1fr; } }
+  .ov-card{ background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:16px; }
+  .ov-card .k{ font-family:var(--mono); font-size:10px; color:var(--violet); text-transform:uppercase; letter-spacing:.12em; }
+  .ov-card h3{ font-family:var(--serif); font-size:16px; margin:6px 0 8px; font-weight:400; }
+  .ov-card p{ font-size:13px; color:#c7cfdd; margin:0; }
+  .ov-card ul{ margin:6px 0 0; padding-left:18px; font-size:13px; color:#c7cfdd; }
+
+  /* Comparison table */
+  table.compare{ width:100%; border-collapse:collapse; margin-top:8px; font-size:13.5px; }
+  table.compare th, table.compare td{ border:1px solid var(--line); padding:12px 14px; text-align:left; vertical-align:top; }
+  table.compare th{ font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); background:var(--panel2); }
+  table.compare td.mns{ color:var(--crimson); }
+  table.compare td.mni{ color:var(--amber); }
+  .toggle-row{ display:flex; gap:10px; margin:14px 0; }
+  .toggle-btn{ padding:8px 16px; border-radius:8px; border:1px solid var(--line); background:var(--panel2); color:var(--dim); cursor:pointer; font-family:var(--mono); font-size:12px; }
+  .toggle-btn.on.mns{ background:var(--crimson-dim); color:var(--crimson); border-color:var(--crimson); }
+  .toggle-btn.on.mni{ background:var(--amber-dim); color:var(--amber); border-color:var(--amber); }
+
+  /* Quiz */
+  .quiz-shell{ max-width:680px; margin:0 auto; }
+  .quiz-progress{ font-family:var(--mono); font-size:12px; color:var(--dim); margin-bottom:10px; }
+  .quiz-card{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:26px; }
+  .quiz-q{ font-family:var(--serif); font-size:19px; margin-bottom:18px; }
+  .opt{ display:block; width:100%; text-align:left; padding:13px 16px; margin-bottom:10px; border-radius:10px;
+        border:1px solid var(--line); background:var(--panel2); color:var(--text); cursor:pointer; font-size:14px; transition:.15s; }
+  .opt:hover{ border-color:rgba(255,255,255,.25); }
+  .opt.correct{ border-color:var(--cyan); background:var(--cyan-dim); color:var(--cyan); }
+  .opt.wrong{ border-color:var(--crimson); background:var(--crimson-dim); color:var(--crimson); }
+  .opt:disabled{ cursor:default; }
+  .explain{ margin-top:14px; padding:14px; border-radius:10px; background:var(--panel2); font-size:13.5px; color:#c7cfdd; display:none; }
+  .quiz-actions{ display:flex; justify-content:flex-end; margin-top:16px; }
+  .btn{ padding:10px 20px; border-radius:8px; border:1px solid var(--cyan); background:var(--cyan-dim); color:var(--cyan);
+        font-family:var(--mono); font-size:12.5px; cursor:pointer; }
+  .btn:hover{ background:rgba(0,230,195,.28); }
+  .score-screen{ text-align:center; padding:40px 20px; }
+  .score-screen .big{ font-family:var(--serif); font-size:52px; color:var(--cyan); }
+  .muscle-anim{ display:flex; justify-content:center; margin-top:10px;}
+
+  footer{ text-align:center; padding:30px; color:var(--dim); font-size:12px; font-family:var(--mono); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow"><span class="dot"></span> UCSC · Neuroanatomía funcional</div>
+  <h1>Vía <em>Motora</em>: del pensamiento al movimiento</h1>
+  <p class="subtitle">Explora cada estación de la vía eferente — haz clic sobre los puntos rotulados en cada diagrama para revelar sus características, luego pon a prueba lo aprendido en el juego final.</p>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">0 / 0 estructuras exploradas</div>
+  </div>
+  <nav id="tabNav"></nav>
+</header>
+
+<main id="mainContent"></main>
+
+<footer>Basado en la clase "Vía Motora" — Dr. Jaime Leñero Navarrete, Facultad de Medicina UCSC · Material de estudio interactivo</footer>
+
+<script>
+/* =========================================================
+   DATA MODEL
+========================================================= */
+const SECTIONS = [
+  {id:'intro', label:'01 · Vía Eferente'},
+  {id:'corteza', label:'02 · Corteza Motora'},
+  {id:'piramidal', label:'03 · Vía Piramidal'},
+  {id:'corticoespinal', label:'04 · Corticoespinal'},
+  {id:'corticonuclear', label:'05 · Corticonuclear'},
+  {id:'mni', label:'06 · Motoneurona Inferior'},
+  {id:'clinica', label:'07 · Aplicación Clínica'},
+  {id:'comparar', label:'08 · Comparación'},
+  {id:'juego', label:'09 · Juego Final'},
+];
+
+// hotspot detail banks per section (id -> {title, tag, body, pills})
+const DETAILS = {
+
+  corteza: {
+    m1: {title:'Área Motora Primaria (M1)', tag:'Área 4 de Brodmann',
+      body:'Ubicada en el <b>giro precentral</b>. Contiene las <b>células piramidales gigantes de Betz</b> (capa V), que originan gran parte de las fibras de la vía piramidal. Su función es la <b>ejecución</b> directa del movimiento voluntario.',
+      pills:['Origen MNS','Células de Betz','Ejecución']},
+    premotora: {title:'Área Premotora', tag:'Área 6',
+      body:'Encargada de la <b>planificación y secuenciación</b> de movimientos complejos, especialmente aquellos guiados por estímulos externos (visuales, contextuales).',
+      pills:['Planificación','Secuencia motora']},
+    suplementaria: {title:'Área Motora Suplementaria', tag:'Área 6 medial',
+      body:'Controla movimientos <b>bimanuales</b> y el ajuste <b>postural</b> previo a la acción; participa en el inicio de secuencias motoras generadas internamente.',
+      pills:['Bimanual','Postura']},
+    homunculo: {title:'Homúnculo de Penfield', tag:'Somatotopía',
+      body:'Mapa funcional donde el <b>tamaño de la representación</b> cortical refleja la <b>precisión motora</b> requerida (mano y cara son desproporcionadamente grandes), no la masa muscular real del segmento.',
+      pills:['Somatotopía','Mano y cara ampliadas']},
+    mano: {title:'Zona de la Mano', tag:'Territorio lateral · ACM',
+      body:'Representación amplia por la necesidad de <b>movimientos finos y fraccionados</b> de los dedos. Un ACV de la <b>arteria cerebral media</b> compromete predominantemente cara y mano contralaterales.',
+      pills:['Arteria cerebral media','Movimiento fino']},
+    pierna: {title:'Zona de Pierna/Pie', tag:'Territorio medial · ACA',
+      body:'Ubicada en la <b>cara medial</b> del hemisferio. Un ACV de la <b>arteria cerebral anterior</b> produce un déficit motor predominante de <b>pierna y pie</b> contralaterales.',
+      pills:['Arteria cerebral anterior','Cara medial']},
+  },
+
+  piramidal: {
+    corona: {title:'Corona Radiada', tag:'Fibras de proyección',
+      body:'Conjunto de axones que <b>convergen</b> desde toda la corteza motora hacia un punto de paso obligado: la cápsula interna. Aquí las fibras aún están relativamente dispersas.',
+      pills:['Convergencia axonal']},
+    brazoAnt: {title:'Brazo Anterior', tag:'Compartimiento cápsula interna',
+      body:'Contiene principalmente fibras <b>frontopontinas</b> y tálamo-corticales; no forma parte central de la vía piramidal motora.',
+      pills:['Fibras frontopontinas']},
+    rodilla: {title:'Rodilla', tag:'Compartimiento cápsula interna',
+      body:'Por aquí descienden las fibras <b>corticonucleares (corticobulbares)</b>, destinadas a los núcleos motores de los pares craneales (control de cara, lengua, faringe, laringe).',
+      pills:['Vía corticonuclear','Cara y cuello']},
+    brazoPost: {title:'Brazo Posterior', tag:'Compartimiento cápsula interna — punto crítico',
+      body:'Concentra las fibras <b>corticoespinales</b> de forma muy compacta. Por su alta densidad de fibras en poco espacio, una lesión aquí (frecuente en ACV lacunar) produce <b>hemiplejías extensas y graves</b>.',
+      pills:['Vía corticoespinal','Lesión = hemiplejia extensa']},
+    piramides: {title:'Pirámides Bulbares', tag:'Bulbo raquídeo',
+      body:'Prominencias macroscópicas en la cara anterior del bulbo, formadas por el haz corticoespinal — origen del nombre <b>"vía piramidal"</b> (junto con las células piramidales corticales).',
+      pills:['Bulbo raquídeo','Nombre "piramidal"']},
+  },
+
+  corticoespinal: {
+    corteza: {title:'Corteza Motora (M1)', tag:'Estación 1',
+      body:'Inicio del impulso motor voluntario en las células de Betz del giro precentral.', pills:['Inicio']},
+    capsula: {title:'Cápsula Interna', tag:'Estación 3',
+      body:'Las fibras motoras del brazo posterior continúan su descenso compactadas.', pills:['Brazo posterior']},
+    pedunculos: {title:'Pedúnculos Cerebrales', tag:'Mesencéfalo — Estación 4',
+      body:'Las fibras atraviesan el <b>tercio medio de la base</b> de los pedúnculos cerebrales.', pills:['Mesencéfalo']},
+    decusacion: {title:'Decusación Piramidal', tag:'Unión bulbo-médula — Estación 6',
+      body:'Aproximadamente el <b>85-90% de las fibras cruzan</b> al lado contralateral, formando el tracto corticoespinal lateral. El 10-15% restante continúa ipsilateral como tracto corticoespinal anterior.',
+      pills:['85-90% cruzan','Punto clave lateralidad']},
+    lateral: {title:'Tracto Corticoespinal Lateral', tag:'Médula espinal (cruzado)',
+      body:'Formado por las fibras <b>decusadas</b>. Desciende por el cordón lateral y controla la musculatura <b>distal de las extremidades</b> (movimientos finos, contralaterales al hemisferio de origen).',
+      pills:['Contralateral','Distal / extremidades']},
+    anterior: {title:'Tracto Corticoespinal Anterior', tag:'Médula espinal (directo)',
+      body:'Formado por las fibras <b>no decusadas</b> en el bulbo. Desciende ipsilateral y se decusa <b>segmentariamente</b> a nivel medular; controla musculatura <b>axial y proximal</b> (tronco).',
+      pills:['Ipsilateral inicial','Axial / proximal']},
+    astaAnt: {title:'Neurona Motora Inferior', tag:'Asta anterior — Estación 8',
+      body:'Sinapsis con la segunda motoneurona en la lámina IX de Rexed, en el asta anterior de la médula.', pills:['Relevo final']},
+  },
+
+  corticonuclear: {
+    v: {title:'Núcleo Motor del Trigémino (V)', tag:'Protuberancia — bilateral',
+      body:'Controla los <b>músculos masticadores</b>. Recibe inervación cortical <b>bilateral</b>, por lo que su función rara vez se afecta de forma aislada tras una lesión unilateral (MNS).',
+      pills:['Masticación','Bilateral']},
+    vii: {title:'Núcleo del Facial (VII)', tag:'Protuberancia — mixto',
+      body:'Controla los <b>músculos de expresión facial</b>. El territorio <b>superior</b> (frente) recibe inervación bilateral; el <b>inferior</b> (facial bajo) recibe predominantemente inervación <b>contralateral</b> — esto es clave en la clínica.',
+      pills:['Expresión facial','Facial bajo = contralateral']},
+    ambiguo: {title:'Núcleo Ambiguo (IX, X, XI)', tag:'Bulbo raquídeo — bilateral',
+      body:'Controla músculos de la <b>faringe y laringe</b> (deglución, fonación) a través de los nervios glosofaríngeo, vago y accesorio.',
+      pills:['Deglución','Fonación']},
+    xii: {title:'Núcleo del Hipogloso (XII)', tag:'Bulbo raquídeo — contralateral',
+      body:'Controla los <b>músculos de la lengua</b>. Recibe inervación predominantemente <b>contralateral</b>, por lo que una lesión central (MNS) puede desviar la lengua hacia el lado <b>opuesto</b> a la lesión al protruir.',
+      pills:['Lengua','Predominio contralateral']},
+    clinica: {title:'Perla Clínica: parálisis facial central vs. periférica', tag:'Diagnóstico diferencial',
+      body:'En una lesión <b>central</b> (MNS) se respeta la frente (inervación bilateral) y solo se afecta la <b>hemicara inferior contralateral</b>. En una lesión <b>periférica</b> (MNI, p. ej. parálisis de Bell) se afecta <b>toda la hemicara ipsilateral</b>, incluyendo la frente.',
+      pills:['Central: respeta frente','Periférica: toda la hemicara']},
+  },
+
+  mni: {
+    soma: {title:'Soma de la Motoneurona Inferior', tag:'Micro · asta anterior / núcleo del par craneal',
+      body:'Cuerpo neuronal multipolar de gran tamaño, ubicado en la <b>lámina IX de Rexed</b> (asta anterior medular) o en los núcleos motores de pares craneales. Recibe la sinapsis de la motoneurona superior.',
+      pills:['Asta anterior','Lámina IX']},
+    axon: {title:'Axón mielinizado', tag:'Micro · fibra eferente',
+      body:'Axón de <b>gran calibre</b> y muy mielinizado, lo que permite una <b>conducción rápida</b> del impulso hasta el músculo. Sale por la raíz anterior del nervio espinal o craneal.',
+      pills:['Conducción rápida','Raíz anterior']},
+    nmj: {title:'Unión Neuromuscular (Placa Motora)', tag:'Micro · sinapsis efectora',
+      body:'Sinapsis química entre el axón terminal y la fibra muscular. Libera <b>acetilcolina</b>, que se une a receptores nicotínicos y desencadena la <b>contracción</b> muscular.',
+      pills:['Acetilcolina','Contracción']},
+    unidad: {title:'Unidad Motora', tag:'Micro · principio de Sherrington',
+      body:'Una sola motoneurona inferior inerva <b>múltiples fibras musculares</b>. Es la <b>vía final común</b> de todo el sistema motor: toda orden, venga de donde venga, debe pasar por aquí para producir movimiento.',
+      pills:['Vía final común','Sherrington']},
+    raiz: {title:'Raíz Anterior / Nervio Periférico', tag:'Macro · trayecto',
+      body:'Los axones de la MNI emergen por la <b>raíz anterior</b> del nervio espinal (o craneal) y viajan como parte de un <b>nervio periférico</b> hasta alcanzar su músculo diana.',
+      pills:['Nervio periférico']},
+    musculo: {title:'Músculo Esquelético', tag:'Macro · efector final',
+      body:'Órgano efector de la vía motora. Distintos grupos musculares reciben inervación desde segmentos medulares específicos (miembros, tronco) o desde núcleos de pares craneales (cara, lengua, faringe).',
+      pills:['Efector final']},
+  },
+
+  clinica: {
+    mns: {title:'Lesión de Primera Motoneurona (MNS)', tag:'Síndrome de motoneurona superior',
+      body:'La MNS ejerce una función <b>inhibitoria y moduladora</b> sobre los reflejos medulares. Su lesión (frecuente en ACV) <b>"libera"</b> a la médula de este control, generando: <b>parálisis espástica</b>, <b>hiperreflexia</b> y el signo patognomónico de <b>Babinski (+)</b>.',
+      pills:['Espasticidad','Hiperreflexia','Babinski +']},
+    mni: {title:'Lesión de Segunda Motoneurona (MNI)', tag:'Síndrome de motoneurona inferior',
+      body:'La MNI es el <b>cable ejecutor directo</b>, sin función moduladora. Su lesión (traumas de nervio periférico, poliomielitis) <b>desconecta</b> por completo al músculo: <b>parálisis flácida</b>, <b>arreflexia</b>, <b>atrofia severa y precoz</b>, y <b>fasciculaciones</b>.',
+      pills:['Flacidez','Arreflexia','Fasciculaciones']},
+    aca: {title:'ACV de Arteria Cerebral Anterior (ACA)', tag:'Territorio vascular',
+      body:'Compromete la <b>cara medial</b> del hemisferio → déficit motor predominante de <b>pierna y pie</b> contralaterales.', pills:['Pierna/pie contralateral']},
+    acm: {title:'ACV de Arteria Cerebral Media (ACM)', tag:'Territorio vascular',
+      body:'Compromete la <b>cara lateral</b> del hemisferio, incluida la cápsula interna → déficit motor de <b>cara y mano</b> contralaterales; es el territorio vascular más afectado en ACV isquémico.', pills:['Cara/mano contralateral']},
+  },
+};
+
+// Overview cards (section intro)
+const OVERVIEW = [
+  {k:'Definición', t:'Sistema Eferente', d:'La vía motora es el sistema eferente fundamental del SNC, encargada de la planificación, ejecución y control de los movimientos voluntarios del cuerpo.'},
+  {k:'Clasificación', t:'Vía Piramidal', d:'Se divide en dos grandes sistemas: la <b>vía corticoespinal</b> (control del tronco y extremidades) y la <b>vía corticonuclear / corticobulbar</b> (control de cabeza y cuello).'},
+  {k:'Características', t:'Dos Neuronas en Serie', d:'Toda la vía se organiza como una cadena de <b>dos motoneuronas</b>: una motoneurona superior (cortical) y una motoneurona inferior (efectora).'},
+  {k:'Funciones', t:'Movimiento Voluntario Fino', d:'Permite movimientos <b>discretos, precisos y fraccionados</b>, especialmente de las porciones distales de las extremidades (dedos de la mano).'},
+  {k:'Etiología', t:'Dos Grandes Síndromes', d:'Sus lesiones se agrupan en <b>síndrome de motoneurona superior</b> (ACV, tumores, esclerosis lateral) y <b>síndrome de motoneurona inferior</b> (neuropatías, poliomielitis, ELA).'},
+  {k:'Órganos involucrados', t:'De la Corteza al Músculo', d:'Corteza cerebral, cápsula interna, tronco encefálico (mesencéfalo, protuberancia, bulbo), médula espinal, nervios periféricos y músculo esquelético.'},
+];
+
+/* =========================================================
+   PROGRESS TRACKING
+========================================================= */
+let totalHotspots = 0, visitedHotspots = new Set();
+Object.values(DETAILS).forEach(d => totalHotspots += Object.keys(d).length);
+
+function markVisited(sectionId, hotId){
+  visitedHotspots.add(sectionId+'::'+hotId);
+  updateProgress();
+}
+function updateProgress(){
+  const pct = Math.round((visitedHotspots.size/totalHotspots)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressLabel').textContent = visitedHotspots.size+' / '+totalHotspots+' estructuras exploradas';
+}
+
+/* =========================================================
+   NAV
+========================================================= */
+const tabNav = document.getElementById('tabNav');
+SECTIONS.forEach(s=>{
+  const b = document.createElement('button');
+  b.className='tab'; b.textContent=s.label; b.dataset.target=s.id;
+  b.onclick=()=>showSection(s.id);
+  tabNav.appendChild(b);
+});
+function showSection(id){
+  document.querySelectorAll('section.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.target===id));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* =========================================================
+   GENERIC HOTSPOT WIRING
+========================================================= */
+function wireHotspots(sectionId, panelId, defaultText){
+  const svg = document.getElementById('svg-'+sectionId);
+  const panel = document.getElementById(panelId);
+  svg.querySelectorAll('.hotspot').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      svg.querySelectorAll('.hotspot').forEach(x=>x.classList.remove('active'));
+      h.classList.add('active');
+      const id = h.dataset.id;
+      const d = DETAILS[sectionId][id];
+      markVisited(sectionId, id);
+      panel.innerHTML = renderInfo(d);
+    });
+  });
+}
+function renderInfo(d){
+  return `<div class="info-title">${d.title} <span class="tag">${d.tag}</span></div>
+          <div class="info-body">${d.body}</div>
+          <div class="pill-row">${d.pills.map(p=>`<span class="pill cyan">${p}</span>`).join('')}</div>
+          <div class="source">Fuente: Clase "Vía Motora" — Dr. Jaime Leñero Navarrete, UCSC</div>`;
+}
+
+/* =========================================================
+   BUILD MAIN CONTENT
+========================================================= */
+const main = document.getElementById('mainContent');
+
+/* ---------- 01 INTRO ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-intro">
+  <div class="section-head">
+    <div class="kicker">Estación 00</div>
+    <h2>Vía Eferente: definición y panorama general</h2>
+    <p>La vía motora constituye el sistema eferente fundamental del sistema nervioso central: se origina en la corteza cerebral, desciende por el tronco encefálico y la médula espinal, y conecta con las motoneuronas inferiores para permitir la interacción activa y consciente del individuo con su entorno.</p>
+  </div>
+  <div class="overview-grid">
+    ${OVERVIEW.map(o=>`<div class="ov-card"><div class="k">${o.k}</div><h3>${o.t}</h3><p>${o.d}</p></div>`).join('')}
+  </div>
+  <div class="diagram-card" style="margin-top:20px;">
+    <div class="card-label">Panorama · de la corteza al músculo</div>
+    <svg id="svg-overview" viewBox="0 0 900 240">
+      <defs>
+        <path id="pathway" d="M 100 55 C 190 65, 210 95, 260 105 C 320 118, 340 100, 380 115 C 430 132, 440 150, 470 158 C 540 176, 610 165, 660 170 C 720 176, 760 190, 800 198" fill="none"/>
+        <linearGradient id="brainGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#1b2436"/><stop offset="100%" stop-color="#0e1420"/>
+        </linearGradient>
+      </defs>
+      <line x1="40" y1="205" x2="860" y2="205" stroke="var(--line)" stroke-dasharray="2 6"/>
+
+      <!-- brain silhouette (sagittal) -->
+      <path d="M40 70 C 35 30 90 8 140 12 C 165 4 210 8 225 28 C 250 22 270 42 262 62
+               C 278 70 278 95 262 105 C 268 125 250 140 225 138 C 210 155 175 158 155 145
+               C 120 155 85 140 75 115 C 45 112 30 95 40 70 Z"
+            fill="url(#brainGrad)" stroke="var(--cyan)" stroke-width="1.6"/>
+      <!-- gyri texture -->
+      <path d="M55 55 C 75 45 95 50 100 65 M70 80 C 90 72 108 78 112 92 M95 100 C 118 95 135 102 138 112
+               M130 35 C 150 28 168 34 172 46 M170 60 C 190 55 205 62 208 74" fill="none" stroke="rgba(0,230,195,.35)" stroke-width="2"/>
+      <!-- central sulcus marking precentral gyrus -->
+      <path d="M150 15 C 145 45 150 80 145 120" fill="none" stroke="var(--amber)" stroke-width="2" stroke-dasharray="3 4" opacity=".8"/>
+      <text x="150" y="8" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--cyan)">CORTEZA MOTORA</text>
+
+      <!-- brainstem -->
+      <path d="M258 100 C 275 108 285 128 278 148 C 288 158 288 178 274 188 C 280 198 274 210 260 212"
+            fill="none" stroke="var(--violet)" stroke-width="10" stroke-linecap="round" opacity=".55"/>
+      <text x="300" y="150" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--violet)">CÁPSULA INTERNA /</text>
+      <text x="300" y="162" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--violet)">TRONCO ENCEFÁLICO</text>
+
+      <!-- spinal cord with vertebral hints -->
+      <path d="M262 212 C 340 205 420 200 480 205 C 560 212 600 190 660 195 C 710 199 750 205 790 208"
+            fill="none" stroke="var(--dim)" stroke-width="7" stroke-linecap="round" opacity=".5"/>
+      <g stroke="var(--line)" stroke-width="1">
+        <line x1="300" y1="200" x2="300" y2="215"/><line x1="360" y1="200" x2="360" y2="215"/>
+        <line x1="420" y1="203" x2="420" y2="216"/><line x1="500" y1="205" x2="500" y2="220"/>
+        <line x1="580" y1="200" x2="580" y2="213"/><line x1="650" y1="197" x2="650" y2="210"/>
+      </g>
+      <text x="480" y="230" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--dim)">MÉDULA ESPINAL (ASTA ANTERIOR)</text>
+
+      <!-- peripheral nerve to muscle -->
+      <path d="M790 208 C 815 210 828 200 840 190" fill="none" stroke="var(--amber)" stroke-width="3" opacity=".8"/>
+      <!-- muscle: striated belly -->
+      <g transform="translate(840,160)">
+        <path d="M0 10 C 5 -5 45 -8 50 10 C 55 28 45 45 25 46 C 5 45 -5 28 0 10 Z" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.6"/>
+        <path d="M6 12 C 16 6 34 6 44 12 M4 22 C 16 16 34 16 46 22 M8 32 C 18 28 32 28 42 32" stroke="var(--amber)" stroke-width="1" opacity=".6" fill="none"/>
+      </g>
+      <text x="865" y="222" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--amber)">MÚSCULO</text>
+
+      <circle r="5" class="signal-dot">
+        <animateMotion dur="4.5s" repeatCount="indefinite" rotate="auto">
+          <mpath href="#pathway"/>
+        </animateMotion>
+      </circle>
+    </svg>
+    <p style="color:var(--dim); font-size:12.5px; margin-top:4px;">El punto animado representa el impulso motor voluntario recorriendo la cadena de dos neuronas: motoneurona superior (corteza → tronco/médula) y motoneurona inferior (médula/tronco → músculo).</p>
+  </div>
+</section>
+`);
+
+/* ---------- 02 CORTEZA MOTORA ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-corteza">
+  <div class="section-head">
+    <div class="kicker">Estación 01</div>
+    <h2>Corteza Motora: el origen</h2>
+    <p>Haz clic en cada área o zona del homúnculo para conocer su función y su correlato clínico vascular.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Corte coronal esquemático · giro precentral</div>
+      <svg id="svg-corteza" viewBox="0 0 420 340">
+        <defs>
+          <linearGradient id="lobeGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#16202f"/><stop offset="100%" stop-color="#0e1420"/>
+          </linearGradient>
+        </defs>
+        <!-- lateral hemisphere silhouette: frontal (left) to occipital (right), temporal lobe below -->
+        <path d="M45 150 C 35 90 75 45 140 32 C 190 20 250 18 290 35 C 335 50 365 85 372 120
+                 C 378 150 372 175 355 190 C 365 205 358 222 340 226
+                 C 345 245 320 258 295 250 C 280 268 245 272 220 262
+                 C 195 278 150 275 130 258 C 95 262 65 245 58 215
+                 C 30 205 22 175 45 150 Z"
+              fill="url(#lobeGrad)" stroke="var(--cyan)" stroke-width="1.6"/>
+        <!-- sylvian fissure -->
+        <path d="M110 190 C 160 205 220 208 270 195" fill="none" stroke="rgba(0,230,195,.4)" stroke-width="2"/>
+        <!-- gyri texture: frontal lobe (anterior to central sulcus) -->
+        <path d="M60 100 C 80 90 100 95 105 112 M55 130 C 78 122 98 128 103 145 M75 70 C 98 62 118 68 122 84
+                 M100 55 C 122 47 142 53 146 68" fill="none" stroke="rgba(0,230,195,.3)" stroke-width="2"/>
+        <!-- gyri texture: parietal/occipital (posterior to central sulcus) -->
+        <path d="M255 55 C 278 50 298 60 300 78 M285 75 C 308 70 328 82 328 100 M300 105 C 322 102 340 115 338 133
+                 M295 145 C 316 145 332 158 328 175" fill="none" stroke="rgba(156,140,249,.3)" stroke-width="2"/>
+
+        <!-- CENTRAL SULCUS separating precentral (motor) from postcentral (sensory) -->
+        <path id="csulcus" d="M210 25 C 195 55 205 90 185 120 C 168 148 175 175 155 200 C 140 220 138 235 122 250"
+              fill="none" stroke="var(--amber)" stroke-width="2.4" stroke-dasharray="1 0" opacity=".9"/>
+        <text x="222" y="20" font-family="var(--mono)" font-size="8.5" fill="var(--amber)">surco central</text>
+
+        <!-- precentral gyrus / homunculus strip (motor strip, just anterior/left of sulcus) -->
+        <path d="M198 30 C 182 60 192 92 172 122 C 155 150 162 176 142 202 C 128 220 126 234 110 248"
+              fill="none" stroke="var(--violet)" stroke-width="15" stroke-linecap="round" opacity=".45"/>
+
+        <g class="hotspot" data-id="pierna" transform="translate(202,35)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="10" y="-10">Pierna/Pie (medial · ACA)</text>
+        </g>
+        <g class="hotspot" data-id="mano" transform="translate(158,135)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-12" y="-6" text-anchor="end">Mano (lateral · ACM)</text>
+        </g>
+        <g class="hotspot" data-id="homunculo" transform="translate(120,240)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-14" y="18" text-anchor="end">Homúnculo de Penfield</text>
+        </g>
+        <g class="hotspot" data-id="m1" transform="translate(178,90)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="16" y="4">M1 · Giro Precentral (Área 4)</text>
+        </g>
+        <g class="hotspot" data-id="premotora" transform="translate(110,100)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-12" y="-8" text-anchor="end">Premotora · Área 6</text>
+        </g>
+        <g class="hotspot" data-id="suplementaria" transform="translate(150,55)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-8" y="-14" text-anchor="end">A. Motora Suplementaria</text>
+        </g>
+
+        <!-- brainstem stub for orientation -->
+        <path d="M175 258 C 172 275 178 292 190 300" fill="none" stroke="var(--dim)" stroke-width="8" stroke-linecap="round" opacity=".5"/>
+        <text x="205" y="305" font-family="var(--mono)" font-size="8" fill="var(--dim)">hacia tronco encefálico ↓</text>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-corteza">
+      <div class="info-placeholder">Selecciona un área o zona del diagrama para ver sus características.</div>
+      <div class="hint">M1 (Betz) ejecuta · Premotora planifica · Suplementaria coordina · Homúnculo mapea</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 03 VIA PIRAMIDAL ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-piramidal">
+  <div class="section-head">
+    <div class="kicker">Estación 02</div>
+    <h2>Vía Piramidal: definición y compartimentos de la cápsula interna</h2>
+    <p>La vía piramidal agrupa el sistema corticoespinal y corticonuclear: es la principal vía motora voluntaria, y debe su nombre a las células piramidales corticales y a las pirámides bulbares. Explora los compartimentos de la cápsula interna, su cuello de botella anatómico.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Corte axial esquemático · cápsula interna</div>
+      <svg id="svg-piramidal" viewBox="0 0 420 300">
+        <defs>
+          <radialGradient id="brainAxial" cx="50%" cy="45%" r="65%">
+            <stop offset="0%" stop-color="#1a2434"/><stop offset="100%" stop-color="#0d1219"/>
+          </radialGradient>
+        </defs>
+        <!-- skull/brain outline, axial section -->
+        <ellipse cx="210" cy="150" rx="172" ry="112" fill="url(#brainAxial)" stroke="var(--line)" stroke-width="1.5"/>
+        <!-- interhemispheric fissure -->
+        <line x1="210" y1="42" x2="210" y2="258" stroke="rgba(255,255,255,.12)" stroke-dasharray="2 4"/>
+
+        <!-- === RIGHT HEMISPHERE (structures + hotspots) === -->
+        <g id="rightStructs">
+          <!-- lateral ventricle (comma) -->
+          <path d="M218 95 C 232 88 244 96 244 112 C 244 128 230 132 220 128 C 226 145 224 165 214 172"
+                fill="none" stroke="#4a5975" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+          <!-- caudate head -->
+          <path d="M232 100 C 248 92 262 100 260 116 C 258 130 244 134 234 126 C 228 116 226 106 232 100 Z"
+                fill="#2a3547" stroke="#5a6c8c" stroke-width="1"/>
+          <!-- thalamus -->
+          <ellipse cx="252" cy="168" rx="26" ry="20" fill="#33324a" stroke="var(--cyan)" stroke-width="1" opacity=".9"/>
+          <!-- lentiform nucleus: putamen (outer) + globus pallidus (inner wedge) -->
+          <path d="M300 108 C 322 118 330 145 322 172 C 315 196 292 208 275 198 C 268 190 268 178 275 172
+                    C 268 160 268 140 275 128 C 282 112 292 102 300 108 Z"
+                fill="#3a2c2c" stroke="var(--crimson)" stroke-width="1.2" opacity=".9"/>
+          <path d="M290 130 C 300 138 302 158 293 178 C 287 188 278 188 278 172 C 278 155 278 140 290 130 Z"
+                fill="#4a3535" stroke="var(--crimson)" stroke-width=".8" opacity=".8"/>
+          <!-- internal capsule: genu (V) between caudate/thalamus (medial) and lentiform (lateral) -->
+          <path d="M262 108 C 272 120 274 145 268 168 C 264 185 258 196 248 200"
+                fill="none" stroke="var(--violet)" stroke-width="9" stroke-linecap="round" opacity=".65"/>
+        </g>
+
+        <!-- mirrored faint left hemisphere for anatomical symmetry -->
+        <g transform="matrix(-1,0,0,1,420,0)" opacity=".55">
+          <use href="#rightStructs"/>
+        </g>
+
+        <!-- hotspots -->
+        <g class="hotspot" data-id="corona" transform="translate(255,55)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="10" y="-8">Corona Radiada</text>
+        </g>
+        <g class="hotspot" data-id="brazoAnt" transform="translate(258,112)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="-8">Brazo Anterior</text>
+        </g>
+        <g class="hotspot" data-id="rodilla" transform="translate(266,150)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="4">Rodilla (corticonuclear)</text>
+        </g>
+        <g class="hotspot" data-id="brazoPost" transform="translate(263,188)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="18">Brazo Posterior (corticoespinal)</text>
+        </g>
+        <g class="hotspot" data-id="piramides" transform="translate(210,272)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="10" y="18">Pirámides Bulbares (bulbo, más abajo)</text>
+        </g>
+
+        <text x="252" y="245" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--dim)">tálamo</text>
+        <text x="305" y="205" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--crimson)">putamen / globo pálido</text>
+        <text x="248" y="90" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="#8894ab">núcleo caudado</text>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-piramidal">
+      <div class="info-placeholder">Selecciona un compartimento para ver qué fibras contiene y su relevancia clínica.</div>
+      <div class="hint">Anterior → frontopontinas · Rodilla → corticonuclear · Posterior → corticoespinal</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 04 CORTICOESPINAL ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-corticoespinal">
+  <div class="section-head">
+    <div class="kicker">Estación 03</div>
+    <h2>Vía Corticoespinal: organización somatotópica y decusación</h2>
+    <p>Sigue el trayecto descendente completo, desde la corteza hasta el asta anterior de la médula, y descubre por qué el 85-90% de las fibras terminan controlando el lado <em>opuesto</em> del cuerpo.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Trayecto longitudinal · corteza → médula</div>
+      <svg id="svg-corticoespinal" viewBox="0 0 380 470">
+        <defs>
+          <linearGradient id="stemGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#182238"/><stop offset="100%" stop-color="#0e131e"/>
+          </linearGradient>
+        </defs>
+        <!-- cerebral hemisphere stub -->
+        <path d="M120 8 C 100 5 80 20 82 42 C 80 62 100 78 130 76 C 160 82 190 72 200 50 C 210 30 195 10 170 8 C 155 2 135 3 120 8 Z"
+              fill="url(#stemGrad)" stroke="var(--cyan)" stroke-width="1.4"/>
+
+        <!-- corona radiata fanning fibers -->
+        <path d="M100 55 C 120 75 130 90 140 100 M130 68 C 145 82 150 95 155 105 M160 62 C 165 80 165 95 165 108"
+              fill="none" stroke="var(--cyan)" stroke-width="2" opacity=".6"/>
+
+        <!-- internal capsule / midbrain peduncles (narrowing tube) -->
+        <path d="M120 100 C 110 120 112 140 130 155 L 170 155 C 188 140 190 120 180 100 Z"
+              fill="#151d2c" stroke="var(--violet)" stroke-width="1.6"/>
+
+        <!-- pons bulge -->
+        <path d="M112 155 C 95 168 92 195 112 210 C 135 222 175 222 198 210 C 216 195 214 168 198 155 Z"
+              fill="#151d2c" stroke="var(--dim)" stroke-width="1.4"/>
+
+        <!-- medulla with pyramid ridges -->
+        <path d="M122 210 C 116 225 116 245 124 262 L 186 262 C 194 245 194 225 188 210 Z"
+              fill="#151d2c" stroke="var(--dim)" stroke-width="1.4"/>
+        <path d="M136 218 L 132 258 M174 218 L 178 258" stroke="var(--cyan)" stroke-width="5" stroke-linecap="round" opacity=".8"/>
+
+        <!-- decussating fiber bundles (X pattern), majority crossing -->
+        <path d="M136 258 C 150 278 110 285 100 305" fill="none" stroke="var(--crimson)" stroke-width="3.5"/>
+        <path d="M144 258 C 160 280 122 292 112 312" fill="none" stroke="var(--crimson)" stroke-width="3"/>
+        <path d="M174 258 C 160 278 200 285 210 305" fill="none" stroke="var(--crimson)" stroke-width="3.5"/>
+        <path d="M156 260 C 156 280 156 292 152 312" fill="none" stroke="var(--amber)" stroke-width="2.6" opacity=".85"/>
+
+        <!-- spinal cord (tapering tube) -->
+        <path d="M104 312 C 96 350 96 400 108 430 L 206 430 C 218 400 218 350 210 312 Z"
+              fill="url(#stemGrad)" stroke="var(--line)" stroke-width="1.4"/>
+        <path d="M112 320 C 108 355 108 395 116 424" fill="none" stroke="var(--crimson)" stroke-width="6" stroke-linecap="round" opacity=".55"/>
+        <path d="M198 320 C 202 355 202 395 196 424" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linecap="round" opacity=".5"/>
+
+        <!-- spinal cord cross-section inset -->
+        <circle cx="300" cy="400" r="52" fill="#10151f" stroke="var(--line)" stroke-width="1.4"/>
+        <path d="M300 368 C 288 372 282 384 288 396 C 278 400 274 412 282 420 C 274 428 278 440 290 442
+                 C 288 430 296 420 306 420 C 296 414 294 402 302 396 C 294 390 294 378 300 368 Z"
+              fill="#232c40" stroke="#4a5975" stroke-width="1" transform="translate(0,0) scale(1,1)"/>
+        <path d="M300 368 C 312 372 318 384 312 396 C 322 400 326 412 318 420 C 326 428 322 440 310 442
+                 C 312 430 304 420 294 420 C 304 414 306 402 298 396 C 306 390 306 378 300 368 Z"
+              fill="#232c40" stroke="#4a5975" stroke-width="1"/>
+        <path d="M262 385 C 258 400 258 410 265 420" fill="none" stroke="var(--crimson)" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+        <path d="M338 385 C 342 400 342 410 335 420" fill="none" stroke="var(--crimson)" stroke-width="6" stroke-linecap="round" opacity=".7"/>
+        <path d="M280 435 C 290 440 310 440 320 435" fill="none" stroke="var(--amber)" stroke-width="5" stroke-linecap="round" opacity=".7"/>
+        <text x="300" y="358" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--dim)">corte axial medular</text>
+
+        <g class="hotspot" data-id="corteza" transform="translate(140,40)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="14" y="-10">Corteza Motora (M1)</text>
+        </g>
+        <g class="hotspot" data-id="capsula" transform="translate(150,128)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-14" y="-8" text-anchor="end">Cápsula Interna</text>
+        </g>
+        <g class="hotspot" data-id="pedunculos" transform="translate(155,183)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-14" y="4" text-anchor="end">Pedúnculos / Protuberancia</text>
+        </g>
+        <g class="hotspot" data-id="decusacion" transform="translate(155,262)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="14" y="4">Decusación Piramidal (85-90%)</text>
+        </g>
+        <g class="hotspot" data-id="lateral" transform="translate(262,405)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-14" y="-14" text-anchor="end">Tracto Lateral (cruzado)</text>
+        </g>
+        <g class="hotspot" data-id="anterior" transform="translate(300,438)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="0" y="18" text-anchor="middle">Tracto Anterior (directo)</text>
+        </g>
+        <g class="hotspot" data-id="astaAnt" transform="translate(150,420)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-14" y="4" text-anchor="end">Asta Anterior (MNI)</text>
+        </g>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-corticoespinal">
+      <div class="info-placeholder">Haz clic en cada estación del trayecto para reconstruir la vía completa.</div>
+      <div class="hint">Cian = vía directa · Rojo = fibras decusadas · Ámbar = fibras directas (anterior)</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 05 CORTICONUCLEAR ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-corticonuclear">
+  <div class="section-head">
+    <div class="kicker">Estación 04</div>
+    <h2>Vía Corticonuclear (Corticobulbar): el control craneal</h2>
+    <p>Contraparte craneal de la vía corticoespinal. Conecta la corteza con los núcleos motores de los pares craneales para controlar cara, lengua, faringe y laringe.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Tronco encefálico · núcleos de pares craneales</div>
+      <svg id="svg-corticonuclear" viewBox="0 0 380 340">
+        <defs>
+          <linearGradient id="stemGrad2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#182238"/><stop offset="100%" stop-color="#0e131e"/>
+          </linearGradient>
+        </defs>
+        <!-- cortex origin stub -->
+        <path d="M95 10 C 78 8 66 20 68 34 C 66 48 82 58 100 55 C 118 60 136 52 138 38 C 142 24 128 12 112 10 C 106 6 100 6 95 10 Z"
+              fill="#151d2c" stroke="var(--cyan)" stroke-width="1.4"/>
+        <path d="M110 52 C 130 66 150 78 160 92" fill="none" stroke="var(--cyan)" stroke-width="3"/>
+
+        <!-- midbrain (peduncles) -->
+        <path d="M150 92 C 138 105 138 122 155 132 L 205 132 C 222 122 222 105 210 92 Z"
+              fill="url(#stemGrad2)" stroke="var(--violet)" stroke-width="1.5"/>
+        <!-- pons (bulge) -->
+        <path d="M140 132 C 118 145 115 175 140 192 C 168 206 200 206 228 192 C 253 175 250 145 228 132 Z"
+              fill="url(#stemGrad2)" stroke="var(--dim)" stroke-width="1.4"/>
+        <!-- medulla (tapering, with pyramids) -->
+        <path d="M150 192 C 140 210 140 240 152 262 C 165 275 205 275 218 262 C 230 240 230 210 220 192 Z"
+              fill="url(#stemGrad2)" stroke="var(--dim)" stroke-width="1.4"/>
+        <path d="M168 200 L 165 258 M204 200 L 207 258" stroke="var(--cyan)" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+        <!-- cord continuation -->
+        <path d="M158 262 C 150 285 150 300 158 315 L 214 315 C 222 300 222 285 214 262 Z"
+              fill="url(#stemGrad2)" stroke="var(--line)" stroke-width="1.2"/>
+
+        <!-- descending corticonuclear fibers with bilateral branches to nuclei -->
+        <path d="M185 92 C 185 105 185 118 185 132" stroke="var(--cyan)" stroke-width="3" fill="none"/>
+        <path d="M185 132 L 185 262" stroke="var(--cyan)" stroke-width="3" fill="none" opacity=".85"/>
+        <!-- bilateral projections (both sides) for V, VII sup, ambiguo -->
+        <path d="M185 150 C 210 148 230 150 248 155 M185 150 C 160 148 140 150 122 155" stroke="var(--violet)" stroke-width="2" fill="none" opacity=".8"/>
+        <path d="M185 175 C 210 173 230 175 248 180 M185 175 C 160 173 140 175 122 180" stroke="var(--violet)" stroke-width="2" fill="none" opacity=".8"/>
+        <path d="M185 232 C 205 230 220 232 235 238 M185 232 C 165 230 150 232 135 238" stroke="var(--violet)" stroke-width="2" fill="none" opacity=".8"/>
+        <!-- predominantly contralateral for XII -->
+        <path d="M185 258 C 200 262 208 270 218 280" stroke="var(--crimson)" stroke-width="2.4" fill="none"/>
+
+        <g class="hotspot" data-id="v" transform="translate(248,155)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="4">V · Trigémino (masticadores)</text>
+        </g>
+        <g class="hotspot" data-id="vii" transform="translate(248,180)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="4">VII · Facial (expresión facial)</text>
+        </g>
+        <g class="hotspot" data-id="ambiguo" transform="translate(235,238)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="4">IX, X, XI · Núcleo Ambiguo</text>
+        </g>
+        <g class="hotspot" data-id="xii" transform="translate(218,280)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="14" y="4">XII · Hipogloso (lengua)</text>
+        </g>
+        <g class="hotspot" data-id="clinica" transform="translate(186,320)">
+          <circle class="ring" r="9" stroke="var(--crimson)"/><circle class="dot" r="7" fill="var(--crimson)"/>
+          <text x="14" y="4" fill="var(--crimson)">⚠ Perla clínica: parálisis facial</text>
+        </g>
+        <text x="120" y="150" text-anchor="end" font-family="var(--mono)" font-size="8" fill="var(--dim)">mesencéfalo/protuberancia</text>
+        <text x="140" y="292" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--dim)">bulbo</text>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-corticonuclear">
+      <div class="info-placeholder">Selecciona un núcleo motor para ver a qué músculos controla y su patrón de inervación.</div>
+      <div class="hint">La mayoría de los núcleos reciben inervación bilateral — excepto VII inferior y XII.</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 06 MOTONEURONA INFERIOR ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-mni">
+  <div class="section-head">
+    <div class="kicker">Estación 05</div>
+    <h2>Motoneurona Inferior: el efector</h2>
+    <p>La vía final común del movimiento. A la izquierda, la vista <em>microscópica</em> de la unidad motora; a la derecha, su trayecto <em>macroscópico</em> desde la médula hasta el músculo.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Vista microscópica · unidad motora / placa terminal</div>
+      <svg id="svg-mni" viewBox="0 0 380 300">
+        <defs>
+          <radialGradient id="somaGrad" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#1c3530"/><stop offset="100%" stop-color="#0f1c1a"/>
+          </radialGradient>
+        </defs>
+        <!-- irregular multipolar soma -->
+        <path d="M65 45 C 50 35 35 45 34 62 C 20 65 18 82 30 92 C 22 105 32 120 48 118
+                 C 52 132 70 138 82 128 C 96 136 112 128 112 112 C 126 112 132 96 122 84
+                 C 132 72 124 56 108 56 C 106 42 88 34 76 42 C 72 38 68 40 65 45 Z"
+              fill="url(#somaGrad)" stroke="var(--cyan)" stroke-width="1.8"/>
+        <!-- nucleus + nucleolus -->
+        <circle cx="76" cy="82" r="16" fill="#12241f" stroke="var(--cyan)" stroke-width="1.2" opacity=".9"/>
+        <circle cx="80" cy="78" r="3.5" fill="var(--cyan)" opacity=".8"/>
+        <!-- dendrites branching outward -->
+        <path d="M40 60 C 22 50 10 45 2 32 M35 90 C 15 92 5 100 -5 112 M55 122 C 45 138 35 148 22 158
+                  M100 40 C 108 22 118 12 132 6 M118 58 C 138 50 152 44 168 40" stroke="var(--cyan)" stroke-width="1.6" fill="none" opacity=".75"/>
+
+        <!-- axon hillock + myelinated axon with nodes of Ranvier -->
+        <path d="M126 100 C 155 108 178 118 200 130" stroke="var(--dim)" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <g stroke="#2b3648" stroke-width="9" stroke-linecap="round">
+          <path d="M132 105 C 145 110 152 113 160 116"/>
+          <path d="M168 120 C 180 124 188 128 196 132"/>
+          <path d="M204 136 C 216 142 224 146 232 150"/>
+          <path d="M240 154 C 252 160 260 165 268 170"/>
+        </g>
+        <g stroke="var(--dim)" stroke-width="2">
+          <line x1="163" y1="112" x2="166" y2="122"/>
+          <line x1="199" y1="128" x2="202" y2="138"/>
+          <line x1="235" y1="148" x2="238" y2="158"/>
+        </g>
+        <path d="M126 100 C 155 108 178 118 200 130 C 225 142 245 150 268 170" stroke="var(--dim)" stroke-width="1" fill="none" opacity="0"/>
+        <path d="M268 170 C 282 182 288 196 292 208" stroke="var(--dim)" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+        <!-- axon terminal boutons -->
+        <circle cx="296" cy="214" r="5" fill="var(--amber)" opacity=".85"/>
+        <circle cx="304" cy="222" r="4" fill="var(--amber)" opacity=".7"/>
+        <circle cx="288" cy="222" r="4" fill="var(--amber)" opacity=".7"/>
+
+        <!-- synaptic cleft / NMJ zoom -->
+        <path d="M280 226 C 296 230 312 230 330 226" stroke="var(--amber)" stroke-width="2" stroke-dasharray="2 3" fill="none"/>
+
+        <!-- muscle fibers with striations -->
+        <g>
+          <rect x="235" y="232" width="130" height="16" rx="7" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.3"/>
+          <rect x="235" y="252" width="130" height="16" rx="7" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.3"/>
+          <rect x="235" y="272" width="130" height="16" rx="7" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.3"/>
+          <g stroke="var(--amber)" stroke-width=".9" opacity=".55">
+            <path d="M250 233 L250 247 M262 233 L262 247 M274 233 L274 247 M286 233 L286 247 M298 233 L298 247 M310 233 L310 247 M322 233 L322 247 M334 233 L334 247 M346 233 L346 247"/>
+            <path d="M250 253 L250 267 M262 253 L262 267 M274 253 L274 267 M286 253 L286 267 M298 253 L298 267 M310 253 L310 267 M322 253 L322 267 M334 253 L334 267 M346 253 L346 267"/>
+            <path d="M250 273 L250 287 M262 273 L262 287 M274 273 L274 287 M286 273 L286 287 M298 273 L298 287 M310 273 L310 287 M322 273 L322 287 M334 273 L334 287 M346 273 L346 287"/>
+          </g>
+        </g>
+
+        <g class="hotspot" data-id="soma" transform="translate(76,82)">
+          <circle class="ring" r="10"/><circle class="dot" r="8"/>
+          <text x="-30" y="-42" text-anchor="middle">Soma multipolar</text>
+        </g>
+        <g class="hotspot" data-id="axon" transform="translate(200,130)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="6" y="-14">Axón mielinizado (nodos de Ranvier)</text>
+        </g>
+        <g class="hotspot" data-id="nmj" transform="translate(300,222)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="-100" y="-16">Placa Motora (NMJ)</text>
+        </g>
+        <g class="hotspot" data-id="unidad" transform="translate(300,280)">
+          <circle class="ring" r="8"/><circle class="dot" r="6"/>
+          <text x="12" y="4">Unidad Motora</text>
+        </g>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-mni-left">
+      <div class="info-placeholder">Explora la microanatomía de la unidad motora.</div>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:20px;">
+    <div class="diagram-card">
+      <div class="card-label">Vista macroscópica · trayecto médula → músculo</div>
+      <svg id="svg-mni-macro" viewBox="0 0 380 240">
+        <!-- spinal cord cross-section -->
+        <circle cx="75" cy="90" r="48" fill="#10151f" stroke="var(--line)" stroke-width="1.4"/>
+        <path d="M75 55 C 63 59 57 71 63 83 C 53 87 49 99 57 107 C 49 115 53 127 65 129
+                 C 63 117 71 107 81 107 C 71 101 69 89 77 83 C 69 77 69 65 75 55 Z"
+              fill="#232c40" stroke="#4a5975" stroke-width="1"/>
+        <path d="M75 55 C 87 59 93 71 87 83 C 97 87 101 99 93 107 C 101 115 97 127 85 129
+                 C 87 117 79 107 69 107 C 79 101 81 89 73 83 C 81 77 81 65 75 55 Z"
+              fill="#232c40" stroke="#4a5975" stroke-width="1"/>
+        <!-- ventral horn highlighted -->
+        <path d="M50 95 C 46 108 46 116 54 125" stroke="var(--amber)" stroke-width="7" stroke-linecap="round" fill="none" opacity=".75"/>
+        <text x="75" y="42" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--dim)">corte medular</text>
+
+        <!-- ventral root exiting -->
+        <path d="M58 118 C 48 132 46 145 55 158" stroke="var(--amber)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- peripheral nerve as bundled fascicles -->
+        <path d="M55 158 C 100 178 160 182 210 178 C 250 175 270 172 300 168" stroke="none" fill="none"/>
+        <g stroke="var(--amber)" stroke-width="1.6" fill="none" opacity=".8">
+          <path d="M55 154 C 100 172 160 176 210 172 C 250 169 270 166 300 162"/>
+          <path d="M55 163 C 100 182 160 187 210 183 C 250 181 270 178 300 174"/>
+          <path d="M55 172 C 100 190 158 195 205 191 C 245 189 268 187 296 183"/>
+        </g>
+        <ellipse cx="180" cy="176" rx="140" ry="14" fill="none" stroke="var(--amber)" stroke-width="1" opacity=".25"/>
+
+        <!-- muscle belly with fanning insertion + striations -->
+        <path d="M300 130 C 330 122 356 132 362 158 C 368 182 356 208 328 214 C 300 220 276 206 274 180 C 272 158 280 138 300 130 Z"
+              fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.6"/>
+        <g stroke="var(--amber)" stroke-width="1" opacity=".5">
+          <path d="M288 148 C 300 160 300 180 292 198 M304 142 C 320 158 320 182 308 204 M320 146 C 336 162 336 184 322 202"/>
+        </g>
+
+        <g class="hotspot" data-id="raiz" transform="translate(150,170)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="-6" y="-14" text-anchor="middle">Raíz Anterior / Nervio Periférico</text>
+        </g>
+        <g class="hotspot" data-id="musculo" transform="translate(320,172)">
+          <circle class="ring" r="9"/><circle class="dot" r="7"/>
+          <text x="-30" y="40" text-anchor="middle">Músculo Esquelético</text>
+        </g>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-mni-right">
+      <div class="info-placeholder">Explora el trayecto macroscópico hacia el efector muscular.</div>
+      <div class="hint">La MNI carece de función moduladora: es un cable ejecutor directo.</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 07 CLINICA ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-clinica">
+  <div class="section-head">
+    <div class="kicker">Estación 06</div>
+    <h2>Aplicación Clínica: primera vs. segunda motoneurona</h2>
+    <p>Compara ambos síndromes y sus correlatos vasculares. Haz clic en cada figura para revelar sus signos clínicos.</p>
+  </div>
+  <div class="grid2">
+    <div class="diagram-card">
+      <div class="card-label">Síndromes de motoneurona</div>
+      <svg id="svg-clinica" viewBox="0 0 380 300">
+        <!-- MNS figure: Wernicke-Mann spastic posture (arm flexed, leg extended) -->
+        <g class="hotspot" data-id="mns" transform="translate(95,95)">
+          <circle cx="0" cy="-45" r="14" fill="var(--crimson-dim)" stroke="var(--crimson)" stroke-width="2" class="dot"/>
+          <path d="M0 -31 C -4 -10 -4 15 0 35" stroke="var(--crimson)" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <!-- spastic flexed arm across chest -->
+          <path d="M-3 -20 C -20 -18 -30 -8 -26 8 C -24 16 -14 18 -8 10" stroke="var(--crimson)" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <!-- normal arm -->
+          <path d="M4 -20 C 16 -8 18 8 14 24" stroke="var(--dim)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".6"/>
+          <!-- spastic extended leg, foot plantarflexed (equinovarus) -->
+          <path d="M-3 33 C -8 55 -10 75 -14 92 C -16 98 -22 100 -28 98" stroke="var(--crimson)" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <!-- normal leg -->
+          <path d="M3 33 C 8 55 8 75 6 96" stroke="var(--dim)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".6"/>
+          <circle class="ring" r="10" stroke="var(--crimson)" cx="0" cy="-45"/>
+          <text x="0" y="-72" text-anchor="middle" fill="var(--crimson)" font-size="11">MNS (central)</text>
+          <text x="0" y="118" text-anchor="middle" fill="var(--dim)" font-size="9">espástico · Babinski (+)</text>
+        </g>
+
+        <!-- MNI figure: flaccid drooping posture -->
+        <g class="hotspot" data-id="mni" transform="translate(285,95)">
+          <circle cx="0" cy="-45" r="14" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="2" class="dot"/>
+          <path d="M0 -31 C 2 -10 2 15 0 35" stroke="var(--amber)" stroke-width="9" fill="none" stroke-linecap="round"/>
+          <!-- flaccid drooping arm -->
+          <path d="M-3 -20 C -18 -10 -22 8 -20 28 C -19 36 -22 42 -28 46" stroke="var(--amber)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".9"/>
+          <path d="M4 -20 C 14 -8 16 8 12 24" stroke="var(--dim)" stroke-width="6" fill="none" stroke-linecap="round" opacity=".6"/>
+          <!-- flaccid leg with foot drop -->
+          <path d="M-3 33 C -6 55 -6 75 -8 92 C -10 100 -20 104 -28 100" stroke="var(--amber)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".9"/>
+          <path d="M3 33 C 6 55 6 75 5 96" stroke="var(--dim)" stroke-width="7" fill="none" stroke-linecap="round" opacity=".6"/>
+          <circle class="ring" r="10" stroke="var(--amber)" cx="0" cy="-45"/>
+          <text x="0" y="-72" text-anchor="middle" fill="var(--amber)" font-size="11">MNI (periférico)</text>
+          <text x="0" y="118" text-anchor="middle" fill="var(--dim)" font-size="9">flácido · fasciculaciones</text>
+        </g>
+
+        <line x1="140" y1="60" x2="240" y2="60" stroke="var(--line)" stroke-dasharray="3 5"/>
+
+        <!-- vascular territory: realistic axial brain slice -->
+        <g transform="translate(90,175)">
+          <text x="100" y="-8" text-anchor="middle" font-family="var(--mono)" font-size="9" fill="var(--dim)">territorios vasculares (corte axial)</text>
+          <ellipse cx="100" cy="60" rx="98" ry="65" fill="#0f1420" stroke="var(--line)" stroke-width="1.4"/>
+          <line x1="100" y1="0" x2="100" y2="120" stroke="rgba(255,255,255,.1)" stroke-dasharray="2 4"/>
+          <!-- ACA territory: medial wedge -->
+          <path d="M100 3 C 80 6 68 22 66 40 C 64 55 68 70 78 82 C 86 92 94 100 100 104
+                    C 106 100 114 92 122 82 C 132 70 136 55 134 40 C 132 22 120 6 100 3 Z"
+                fill="var(--violet)" opacity=".22" stroke="var(--violet)" stroke-width="1.2"/>
+          <!-- ACM territory: lateral wedges -->
+          <path d="M4 60 C 8 35 25 15 55 8 C 40 25 32 45 34 62 C 36 82 46 98 62 110 C 32 106 10 88 4 60 Z"
+                fill="var(--crimson)" opacity=".22" stroke="var(--crimson)" stroke-width="1.2"/>
+          <path d="M196 60 C 192 35 175 15 145 8 C 160 25 168 45 166 62 C 164 82 154 98 138 110 C 168 106 190 88 196 60 Z"
+                fill="var(--crimson)" opacity=".22" stroke="var(--crimson)" stroke-width="1.2"/>
+
+          <g class="hotspot" data-id="aca" transform="translate(100,55)">
+            <circle class="ring" r="7"/><circle class="dot" r="5"/>
+            <text x="10" y="-8">ACA</text>
+          </g>
+          <g class="hotspot" data-id="acm" transform="translate(30,60)">
+            <circle class="ring" r="7"/><circle class="dot" r="5"/>
+            <text x="-10" y="20" text-anchor="end">ACM</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="info-card" id="panel-clinica">
+      <div class="info-placeholder">Selecciona un síndrome o territorio vascular para ver el detalle clínico.</div>
+      <div class="hint">La distinción MNS vs. MNI es la piedra angular del examen neurológico topográfico.</div>
+    </div>
+  </div>
+</section>
+`);
+
+/* ---------- 08 COMPARACION ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-comparar">
+  <div class="section-head">
+    <div class="kicker">Síntesis</div>
+    <h2>Comparación integradora</h2>
+    <p>Resumen de toda la vía y comparación directa entre motoneurona superior e inferior.</p>
+  </div>
+
+  <div class="diagram-card">
+    <div class="card-label">Cadena completa de 10 estaciones</div>
+    <p style="color:#c7cfdd; font-size:13.5px;">
+      <b>1</b> Corteza motora (M1) → <b>2</b> Corona radiada → <b>3</b> Cápsula interna → <b>4</b> Pedúnculos cerebrales →
+      <b>5</b> Pirámides bulbares → <b>6</b> Decusación piramidal (85-90%) → <b>7</b> Tracto corticoespinal lateral →
+      <b>8</b> Neurona motora inferior (asta anterior) → <b>9</b> Nervio motor periférico → <b>10</b> Músculo esquelético.
+    </p>
+  </div>
+
+  <div class="info-card" style="margin-top:18px;">
+    <div class="info-title">Tabla comparativa · MNS vs. MNI <span class="tag">Diagnóstico topográfico</span></div>
+    <table class="compare">
+      <tr><th>Signo</th><th>Motoneurona Superior (MNS)</th><th>Motoneurona Inferior (MNI)</th></tr>
+      <tr><td>Tono muscular</td><td class="mns">Espasticidad (hipertonía)</td><td class="mni">Flacidez (hipotonía)</td></tr>
+      <tr><td>Reflejos osteotendinosos</td><td class="mns">Hiperreflexia / clonus</td><td class="mni">Arreflexia / hiporreflexia</td></tr>
+      <tr><td>Atrofia muscular</td><td class="mns">Leve (por desuso)</td><td class="mni">Severa y precoz</td></tr>
+      <tr><td>Signos patológicos</td><td class="mns">Babinski (+) / Hoffman (+)</td><td class="mni">Fasciculaciones presentes</td></tr>
+      <tr><td>Función normal</td><td class="mns">Moduladora / inhibitoria sobre reflejos</td><td class="mni">Ejecutora directa (sin modulación)</td></tr>
+      <tr><td>Etiología típica</td><td class="mns">ACV, tumores, esclerosis lateral</td><td class="mni">Trauma de nervio periférico, poliomielitis</td></tr>
+    </table>
+    <div class="source">Fuente: Clase "Vía Motora" — Dr. Jaime Leñero Navarrete, UCSC</div>
+  </div>
+
+  <div class="info-card" style="margin-top:18px;">
+    <div class="info-title">Corticoespinal vs. Corticonuclear <span class="tag">Dos ramas de la vía piramidal</span></div>
+    <table class="compare">
+      <tr><th>Característica</th><th>Vía Corticoespinal</th><th>Vía Corticonuclear</th></tr>
+      <tr><td>Destino</td><td>Asta anterior de la médula espinal</td><td>Núcleos motores de pares craneales (V, VII, IX, X, XI, XII)</td></tr>
+      <tr><td>Territorio controlado</td><td>Tronco y extremidades</td><td>Cara, lengua, faringe y laringe</td></tr>
+      <tr><td>Paso por cápsula interna</td><td>Brazo posterior</td><td>Rodilla</td></tr>
+      <tr><td>Lateralidad</td><td>85-90% cruza en decusación piramidal (bulbo)</td><td>Mayormente bilateral, salvo VII inferior y XII</td></tr>
+    </table>
+  </div>
+</section>
+`);
+
+/* ---------- 09 QUIZ / JUEGO ---------- */
+main.insertAdjacentHTML('beforeend', `
+<section class="view" id="view-juego">
+  <div class="section-head">
+    <div class="kicker">Juego Final</div>
+    <h2>Pon a prueba tu conocimiento</h2>
+    <p>Ocho preguntas basadas en la clase de Vía Motora. Recibirás retroalimentación inmediata en cada respuesta.</p>
+  </div>
+  <div class="quiz-shell">
+    <div class="quiz-progress" id="quizProgress"></div>
+    <div id="quizArea"></div>
+  </div>
+</section>
+`);
+
+/* wire all hotspot sections */
+wireHotspots('corteza','panel-corteza');
+wireHotspots('piramidal','panel-piramidal');
+wireHotspots('corticoespinal','panel-corticoespinal');
+wireHotspots('corticonuclear','panel-corticonuclear');
+
+/* mni has two panels sharing one DETAILS bank -> custom wiring */
+(function(){
+  const leftIds = ['soma','axon','nmj','unidad'];
+  const rightIds = ['raiz','musculo'];
+  document.querySelectorAll('#svg-mni .hotspot').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      document.querySelectorAll('#svg-mni .hotspot').forEach(x=>x.classList.remove('active'));
+      h.classList.add('active');
+      const id=h.dataset.id;
+      markVisited('mni', id);
+      document.getElementById('panel-mni-left').innerHTML = renderInfo(DETAILS.mni[id]);
+    });
+  });
+  document.querySelectorAll('#svg-mni-macro .hotspot').forEach(h=>{
+    h.addEventListener('click', ()=>{
+      document.querySelectorAll('#svg-mni-macro .hotspot').forEach(x=>x.classList.remove('active'));
+      h.classList.add('active');
+      const id=h.dataset.id;
+      markVisited('mni', id);
+      document.getElementById('panel-mni-right').innerHTML = renderInfo(DETAILS.mni[id]);
+    });
+  });
+})();
+wireHotspots('clinica','panel-clinica');
+
+updateProgress();
+showSection('intro');
+
+/* =========================================================
+   QUIZ GAME
+========================================================= */
+const QUIZ = [
+  {q:'¿Cuál es la principal función de la vía piramidal?',
+   opts:['Modular el tono muscular en reposo','Ejecutar movimientos voluntarios discretos, precisos y fraccionados','Controlar exclusivamente el equilibrio','Regular la frecuencia cardíaca'],
+   a:1, e:'La vía piramidal es la principal vía motora voluntaria, especializada en movimientos finos y fraccionados, sobre todo distales.'},
+  {q:'Durante un ACV que afecta el brazo posterior de la cápsula interna, ¿qué fibras se ven principalmente comprometidas?',
+   opts:['Vía corticonuclear','Vía corticoespinal (tracto piramidal)','Vía sensitiva espinotalámica','Fibras del cuerpo calloso'],
+   a:1, e:'El brazo posterior concentra las fibras corticoespinales de forma muy compacta; por eso las lesiones ahí son especialmente extensas.'},
+  {q:'Un paciente presenta déficit motor exclusivo en cara y lengua. ¿En qué compartimento de la cápsula interna sospecharías la lesión?',
+   opts:['Brazo anterior','Rodilla','Brazo posterior','Porción retrolenticular'],
+   a:1, e:'La rodilla de la cápsula interna transporta las fibras corticonucleares, destinadas a los núcleos de los pares craneales que controlan cara y lengua.'},
+  {q:'¿Dónde se localiza el soma de la motoneurona superior?',
+   opts:['Asta anterior de la médula','Ganglio de la raíz dorsal','Giro precentral (Área 4 de Brodmann)','Núcleo del hipogloso'],
+   a:2, e:'La primera motoneurona se origina en la corteza motora primaria, principalmente en las células piramidales gigantes de Betz.'},
+  {q:'¿Qué porcentaje aproximado de fibras corticoespinales cruza en la decusación piramidal?',
+   opts:['10-15%','50%','85-90%','100%'],
+   a:2, e:'Cerca del 85-90% de las fibras cruzan al lado contralateral, formando el tracto corticoespinal lateral; el resto continúa como tracto anterior.'},
+  {q:'¿Qué signo es característico de una lesión de motoneurona inferior (MNI)?',
+   opts:['Espasticidad e hiperreflexia','Signo de Babinski positivo','Fasciculaciones y atrofia severa y precoz','Clonus'],
+   a:2, e:'La MNI, al ser el cable ejecutor directo, produce al lesionarse parálisis flácida, arreflexia, atrofia severa y fasciculaciones.'},
+  {q:'¿Por qué una lesión central (MNS) de la vía corticonuclear respeta la frente en la parálisis facial?',
+   opts:['Porque el núcleo facial superior recibe inervación bilateral','Porque el nervio facial no inerva la frente','Porque la frente no tiene músculos','Porque la lesión siempre es incompleta'],
+   a:0, e:'El territorio superior del núcleo del facial (frente) recibe fibras corticonucleares de ambos hemisferios, por lo que una lesión unilateral no lo afecta; el facial inferior sí, por ser mayormente contralateral.'},
+  {q:'Verdadero o falso: el tracto corticoespinal anterior se decusa a nivel segmentario en la médula y controla musculatura axial/proximal.',
+   opts:['Verdadero','Falso'],
+   a:0, e:'Correcto: a diferencia del tracto lateral (que ya cruzó en el bulbo), el tracto anterior desciende ipsilateral y se decusa segmento a segmento en la médula, controlando musculatura axial y proximal.'},
+];
+
+let qIndex=0, score=0;
+function renderQuiz(){
+  const area = document.getElementById('quizArea');
+  document.getElementById('quizProgress').textContent = `Pregunta ${qIndex+1} de ${QUIZ.length} · Puntaje: ${score}`;
+  if(qIndex >= QUIZ.length){
+    area.innerHTML = `
+      <div class="quiz-card score-screen">
+        <div class="k" style="font-family:var(--mono); color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.1em;">Resultado final</div>
+        <div class="big">${score} / ${QUIZ.length}</div>
+        <p style="color:var(--dim); margin-top:6px;">${score===QUIZ.length ? '¡Impulso perfecto — la señal llegó intacta al músculo!' : 'Repasa las estaciones donde tuviste dudas y vuelve a intentarlo.'}</p>
+        <div class="muscle-anim">
+          <svg width="160" height="60" viewBox="0 0 160 60">
+            <rect x="10" y="18" width="140" height="24" rx="12" fill="var(--amber-dim)" stroke="var(--amber)"/>
+          </svg>
+        </div>
+        <div class="quiz-actions" style="justify-content:center;">
+          <button class="btn" onclick="restartQuiz()">Reintentar el juego</button>
+        </div>
+      </div>`;
+    return;
+  }
+  const item = QUIZ[qIndex];
+  area.innerHTML = `
+    <div class="quiz-card">
+      <div class="quiz-q">${item.q}</div>
+      <div id="optsWrap"></div>
+      <div class="explain" id="explainBox">${item.e}</div>
+      <div class="quiz-actions"><button class="btn" id="nextBtn" style="display:none;" onclick="nextQuestion()">Siguiente →</button></div>
+    </div>`;
+  const wrap = document.getElementById('optsWrap');
+  item.opts.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className='opt'; btn.textContent = opt;
+    btn.onclick = ()=> answerQuiz(i);
+    wrap.appendChild(btn);
+  });
+}
+function answerQuiz(i){
+  const item = QUIZ[qIndex];
+  const opts = document.querySelectorAll('#optsWrap .opt');
+  opts.forEach(o=>o.disabled=true);
+  if(i===item.a){ opts[i].classList.add('correct'); score++; }
+  else { opts[i].classList.add('wrong'); opts[item.a].classList.add('correct'); }
+  document.getElementById('explainBox').style.display='block';
+  document.getElementById('nextBtn').style.display='inline-block';
+  document.getElementById('quizProgress').textContent = `Pregunta ${qIndex+1} de ${QUIZ.length} · Puntaje: ${score}`;
+}
+function nextQuestion(){ qIndex++; renderQuiz(); }
+function restartQuiz(){ qIndex=0; score=0; renderQuiz(); }
+renderQuiz();
+</script>
+</body>
+</html>
