@@ -30,11 +30,13 @@
             padding: 10px 20px;
         }
 
+        /* ESTILO DEL LOGO MODIFICADO PARA SER ENLACE */
         .logo {
             font-size: 24px;
             font-weight: bold;
             color: #f0c14b;
             cursor: pointer;
+            text-decoration: none; 
         }
 
         .search-container {
@@ -174,6 +176,7 @@
             cursor: pointer;
             display: block;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .btn-amazon:hover {
@@ -191,6 +194,8 @@
         .category-item {
             text-align: center;
             font-size: 12px;
+            text-decoration: none;
+            color: inherit;
         }
 
         .circle-img {
@@ -221,8 +226,9 @@
 
     <header>
         <div class="nav-top">
-            <div class="logo">amazon.com.mx</div>
-            
+            <!-- AQUÍ SE APLICÓ EL CAMBIO HACIA LA NUEVA URL Y EL TEXTO "INICIO" -->
+            <a href="https://anatomia-five.vercel.app/" class="logo">Inicio</a>
+
             <div class="search-container">
                 <select class="search-select">
                     <option>Todos los departamentos</option>
@@ -234,11 +240,11 @@
             <div class="nav-right">
                 <div class="nav-item">
                     <span>Hola, Identifícate</span>
-                    <span class="nav-bold">Mi cuenta ▾</span>
+                    <span class="nav-bold">Mi cuenta ▼</span>
                 </div>
                 <div class="nav-item">
                     <span>Prueba</span>
-                    <span class="nav-bold">Prime ▾</span>
+                    <span class="nav-bold">Prime ▼</span>
                 </div>
                 <div class="nav-item">
                     <span>Wish</span>
@@ -265,42 +271,53 @@
         <div class="prime-logo">amazon prime</div>
     </section>
 
+    <!-- AQUÍ SE AGREGARON TUS ARCHIVOS HTML A LAS TARJETAS -->
     <main class="main-container">
-        
+
+        <!-- Tarjeta 1: Examen Neurológico -->
         <div class="card">
             <div>
-                <h2>Bienvenido</h2>
-                <p>Inicia sesión para vivir tu mejor experiencia</p>
+                <h2>Examen Neurológico</h2>
+                <p>Pon a prueba tus conocimientos clínicos y de semiología con este juego interactivo.</p>
             </div>
-            <button class="btn-amazon">Iniciar sesión de forma segura</button>
+            <a href="examen_neurologico.html" class="btn-amazon">Iniciar Juego</a>
         </div>
 
+        <!-- Tarjeta 2: Vías Sensitivas (Agrupa dos de tus archivos) -->
         <div class="card">
-            <h2>Categorías populares</h2>
+            <h2>Vías Sensitivas</h2>
             <div class="category-grid">
-                <div class="category-item">
-                    <div class="circle-img">📷</div>
-                    <span>Electrónicos</span>
-                </div>
-                <div class="category-item">
-                    <div class="circle-img">🧸</div>
-                    <span>Juguetes</span>
-                </div>
+                <a href="via_de_los_sentidos.html" class="category-item">
+                    <div class="circle-img">👁️</div>
+                    <span>Sentidos</span>
+                </a>
+                <a href="vias_sensitivas_viscerales.html" class="category-item">
+                    <div class="circle-img">🫀</div>
+                    <span>Viscerales</span>
+                </a>
             </div>
         </div>
 
+        <!-- Tarjeta 3: Vía Motora -->
         <div class="card">
-            <h2>Amazon Fashion</h2>
-            <div class="image-placeholder">
-                [Imagen de Moda]
+            <div>
+                <h2>Vía Motora Interactiva</h2>
+                <div class="image-placeholder">
+                    [Simulación Motora]
+                </div>
             </div>
+            <a href="via_motora_interactiva.html" class="btn-amazon">Jugar Ahora</a>
         </div>
 
+        <!-- Tarjeta 4: SNA -->
         <div class="card">
-            <h2>Descubre todas las ofertas</h2>
-            <div class="image-placeholder">
-                [Imagen de Ofertas]
+            <div>
+                <h2>Sistema Nervioso Autónomo</h2>
+                <div class="image-placeholder">
+                    [Simulador SNA]
+                </div>
             </div>
+            <a href="sna.html" class="btn-amazon">Explorar SNA</a>
         </div>
 
     </main>
